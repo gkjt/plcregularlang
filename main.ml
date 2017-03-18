@@ -4,16 +4,20 @@ open Lexer
 open Arg
 open Printf
 
-let parseProgram chan =
-    try let lexbuf = Lexing.from_channel chan in
+let channel =
+    try (open_in Sys.argv.(1))
+    with Invalid_argument x -> failwith "USAGE: ./langlangi PATH";;
+let parseProgram =
+    try let lexbuf = Lexing.from_channel channel in
         parse_main language lexbuf
     with Parsing.Parse_error -> failwith "Parse Failure";;
 
+(*
 let arg = ref stdin in
     let setProg prog = arg := open_in prog in
         let usage = "./langlang PROGRAM" in
-            parse [] setProg;
-            let parsedProg = parseProgram !arg in
+            parse [] setProg; *)
+            let parsedProg = parseProgram in
                 let () = print_string "Parsing Completed\n" in
                     let _ = typeOfProgram parsedProg in
                         let () = print_string "Type Checking Completed\n" in
