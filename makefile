@@ -1,7 +1,7 @@
 
 
 link: lexer.cmo parser.cmo langlang.cmo main.cmo parser.cmi
-	ocamlc -o langlangi langlang.cmo parser.cmo lexer.cmo main.cmo
+	ocamlc -o langlangi bin/langlang.cmo bin/parser.cmo bin/lexer.cmo bin/main.cmo
 
 clean:
 	@rm -rf bin
