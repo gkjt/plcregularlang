@@ -1,11 +1,15 @@
 exception TypeError;;
 
 
+type langType = IntType | FunType | LangType | WordType | StringType;;
 
-type langType = IntType | FunType | LangType | WordType;;
+type word = string;;
 
 type langTerm =
-    | Int of int;;
+    | Int of int
+    | String of string
+    | Language of word list
+;;
 
 type 'a context = Env of (string * 'a) list;;
 
@@ -15,6 +19,7 @@ let addBinding env name obj =
 let rec typeOf env exp =
     match exp with
     | Int(n) -> IntType
+    | String(x) -> StringType
     | _ -> raise TypeError;;
 
 let typeOfProgram exp =
@@ -22,7 +27,8 @@ let typeOfProgram exp =
 
 let rec eval env exp =
     match exp with
-    Int x -> Int x
+    | Int x -> Int x
+    | String x -> String x
     ;;
 
 let rec evalProg exp =
@@ -30,5 +36,6 @@ let rec evalProg exp =
 
 let print_val v =
     match v with
-        Int i -> print_string "Int: "; print_int i
+        | Int i -> print_string "Int: "; print_int i
+        | String i -> print_string "String: "; print_string i
     ;;

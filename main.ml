@@ -10,8 +10,13 @@ let channel =
 
 let parseProgram =
     try let lexbuf = Lexing.from_channel channel in
-        parse_main language lexbuf
-    with Parsing.Parse_error -> failwith "Parse Failure";;
+        parse_main prog lexbuf
+    with Parsing.Parse_error -> failwith "Parse Failure on Program";;
+
+let parseInput =
+    try let lexbuf = Lexing.from_channel channel in
+        parse_input language lexbuf
+    with Parsing.Parse_error -> failwith "Parse Failure on Input";;
 
 let parsedProg = parseProgram in
     let () = print_string "Parsing Completed\n" in
