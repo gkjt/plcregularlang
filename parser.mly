@@ -4,17 +4,17 @@
 
 %token RPAR LPAR
 %token <int> INTEGER
-%token WORD
+%token <string> WORD
 %token EMPTYWORD
 %token SEPARATOR
 %token EOF
 
-%start main
-%type <Langlang.langTerm> main
+%start parse_main
+%type <Langlang.langTerm> parse_main
 
 %%
 
-main:
+parse_main:
     expr EOF {$1}
     ;
 
