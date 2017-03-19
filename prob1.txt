@@ -1,21 +1,12 @@
 define prefix {
-	lambda inL { lambda outI {
 	
-		int rawLength = getLength inL;
-		str[rawLength] rawList = unpackL inL;
-		
-		int sLength = getSLength rawList;
-		str[sLength] sList = sort rawList;
-		
-		//Need to figure out exactly how to do nested lambdas
-		str outS = createOutput sList outI;
-		return outS;
-		
-	}}
+	lang inL = GET_INPUT_LANGUAGE;
+	int outS = GET_INPUT_NUMBER;
+	
 }
 
-define getLength {
-	lambda inL {
-		
+define preMap {
+	lambda inStr {
+		if (inStr == ":") then {"a"} else {"a" ^ inStr};
 	}
 }

@@ -1,0 +1,14 @@
+define prefix {
+	
+	lang inL = GET_INPUT_LANGUAGE
+	int outS = GET_INPUT_NUMBER
+	
+	
+	
+}
+
+define preMap {
+	lambda inStr {
+		"a" ^ inStr;;
+	}
+}
