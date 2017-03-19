@@ -41,10 +41,10 @@ let rec typeOf env exp =
     | Assign (x, z) -> typeOf env z
     | _ -> raise TypeError;;
 
-let rec typeOfProgram expList =
+let rec typeCheckProgram expList =
     match expList with
         | [x] -> typeOf (Env[]) x
-        | x::y -> typeOf (Env[]) x; typeOfProgram y
+        | x::y -> typeOf (Env[]) x; typeCheckProgram y
 ;;
 
 

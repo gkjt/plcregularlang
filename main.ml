@@ -21,7 +21,7 @@ let parseInput =
 
 let parsedProg = parseProgram in
     let () = print_string "Parsing Completed\n" in
-        let _ = typeOfProgram parsedProg in
+        let _ = typeCheckProgram parsedProg in
             let () = print_string "Type Checking Completed\n" in
                 let (env, result) = evalProg parsedProg in
                     let () = print_string "Result: " ; print_val result in
