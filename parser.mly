@@ -15,6 +15,7 @@
 %token <string> STRING
 %token ASSIGNMENT
 %token ENDSTMNT
+%token <string> VAR
 
 %right ASSIGNMENT
 
@@ -36,9 +37,8 @@ parse_main:
 expr:
     | INTEGER                   { Int $1 }
     | QUOTE STRING QUOTE        { String $2 }
-    | STRING                    { Var $1 }
-    | STRING ASSIGNMENT expr    { Assign($1, $3) }
-    | LPAR lang RPAR            { Language $2 }
+    | VAR                    { Var $1 }
+    | VAR ASSIGNMENT INTEGER    { Assign($1, Int($3)) }
 
 parse_input:
     | LPAR lang RPAR        { Language $2 }
