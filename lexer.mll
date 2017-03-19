@@ -15,9 +15,9 @@ rule language = parse
 
 and prog = parse
     | ' ' | '\t' | '\n'         { language lexbuf } (* skip whitespace and newlines *)
+    | ['0'-'9']+ as lxm         { INTEGER (int_of_string lxm) }
+    | ['a'-'z']+ as lxm         { STRING (lxm) }
     | eof                       { EOF }
     | ';'                       { ENDSTMNT }
     | '\"'                      { QUOTE }
-    | ['0'-'9']+ as lxm         { INTEGER (int_of_string lxm) }
-    | ['a'-'z']+ as lxm         { STRING (lxm) }
     | '='                       { ASSIGNMENT }

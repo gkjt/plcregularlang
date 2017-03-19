@@ -5,7 +5,7 @@ exception Stuck;;
 exception UnexpectedEnd;;
 
 
-type langType = NullType | IntType | FunType | LangType | StringType;;
+type langType = IntType | FunType | LangType | StringType;;
 
 type word = string;;
 
@@ -57,7 +57,6 @@ let rec isVal env v =
 
 let rec eval env exp =
     match exp with
-    | Null -> raise Terminated
     | Int x -> raise Terminated
     | String x -> raise Terminated
     | Language x -> raise Terminated
