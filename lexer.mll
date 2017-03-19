@@ -7,7 +7,7 @@ rule language = parse
     | ' ' | '\t' | '\n'         { language lexbuf } (* skip whitespace and newlines *)
     | eof                       { EOF }
     | ['0'-'9']+ as lxm         { INTEGER (int_of_string lxm) }
-    | ['a'-'Z']+ as lxm         { WORD (lxm) }
+    | ['a'-'z']+ as lxm         { WORD (lxm) }
     | ','                       { SEPARATOR }
     | ':'                       { EMPTYWORD }
     | '{'                       { LPAR }
@@ -16,6 +16,8 @@ rule language = parse
 and prog = parse
     | ' ' | '\t' | '\n'         { language lexbuf } (* skip whitespace and newlines *)
     | eof                       { EOF }
+    | ';'                       { ENDSTMNT }
     | '\"'                      { QUOTE }
     | ['0'-'9']+ as lxm         { INTEGER (int_of_string lxm) }
-    | ['A'-'z']+ as lxm         { STRING (lxm) }
+    | ['a'-'z']+ as lxm         { STRING (lxm) }
+    | '='                       { ASSIGNMENT }
