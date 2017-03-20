@@ -22,6 +22,7 @@ and prog = parse
 	| "prefix"					{ PREFIX }
     | "U"                       { SETUNION }
     | "print"                   { PRINT }
+    | '"'['a'-'z']+ as lxm '"'        { STRING (lxm) }
     | ['a'-'z']+ as lxm         { VAR (lxm) }
     | ';'                       { ENDSTMNT }
     | '"'                       { QUOTE }

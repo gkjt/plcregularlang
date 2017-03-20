@@ -23,7 +23,7 @@ type langTerm =
     | Assign of string * langTerm
     | ReadLanguage
     | ReadInt
-	| Prefix of string * langTerm
+	| Prefix of langTerm * langTerm
     | Union of langTerm * langTerm
     | Print of langTerm
     | PrintSome of langTerm * int
@@ -172,6 +172,8 @@ let rec eval env exp stdinBuff =
         | StdinInt x -> (env, Int x, EmptyBuffer)
         | _ -> raise (BadBufferError "Unable to read int due to bad buffer"))
 	| Prefix (String x, Language y) -> (env, Language (prefix x y), stdinBuff)
+	| Prefix (x, Language y) -> let (env', x', stdinBuff') = eval env x stdinBuff in (env, Prefix (x', Language y), stdinBuff)
+	| Prefix (x, y) -> let (env', y', stdinBuff') = eval env y stdinBuff in (env, Prefix (x, y'), stdinBuff)
     | Union (Language x, Language y) -> (env, Language (set_union x y), stdinBuff)
     | Union (Language x, y) ->
         let (env', y', stdinBuff') = eval env y stdinBuff in
@@ -216,7 +218,7 @@ let rec print_language v =
                 match v with
                     | Language [] -> print_string "{}"
                     | Language x -> print_string "{"; aux x
-                    | _ -> raise TypeError
+                    | _ -> raise IllegalArgument
 ;;
 
 let print_val v =
@@ -226,14 +228,3 @@ let print_val v =
         | Language x -> print_language v
         | _ -> raise IllegalArgument
     ;;
-	
-let rec prefix s v =
-    let rec aux x = (
-        match x with
-            | [x] -> (s^x)
-            | x :: y -> (s^x) :: aux y
-            ) in
-                match v with
-                    | Language [] -> Language []
-                    | Language x -> Language [aux x]
-;;

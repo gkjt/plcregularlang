@@ -42,12 +42,12 @@ parse_main:
 expr:
     | OBRACK expr CBRACK        { $2 }
     | INTEGER                   { Int $1 }
-    | QUOTE STRING QUOTE        { String $2 }
+    | STRING        { String $1 }
     | VAR                       { Var $1 }
     | VAR ASSIGNMENT expr    	{ Assign($1, $3) }
     | READLANG                  { ReadLanguage }
     | READINT                  	{ ReadInt }
-	| PREFIX STRING expr		{ Prefix($2, $3) }
+	| PREFIX expr expr			{ Prefix( $2, $3) }
     | expr SETUNION expr        { Union ($1, $3)}
     | PRINT expr INTEGER        { PrintSome ($2, $3) }
     | PRINT expr                { Print ($2) }
