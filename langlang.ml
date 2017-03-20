@@ -21,6 +21,7 @@ type langTerm =
     | Assign of string * langTerm
     | ReadLanguage
     | ReadInt
+	| Prefix of string * langTerm
 ;;
 
 type stdinBuffer = StdinBuff of langTerm * stdinBuffer
@@ -58,6 +59,7 @@ let rec typeOf env exp =
             (addBinding env x tz, tz)
     | ReadLanguage -> (env, LangType)
     | ReadInt -> (env, IntType)
+	| Prefix (x, z) -> (env, LangType)
     | _ -> raise TypeError
 ;;
 
@@ -77,6 +79,7 @@ let rec isVal v =
         | Language x -> true
         | ReadLanguage -> true
         | ReadInt -> true
+		| Prefix (x, z) -> true
         | _ -> false
 ;;
 
@@ -101,6 +104,9 @@ let rec eval env exp stdinBuff =
     | ReadInt -> match stdinBuff with
         | StdinInt x -> (env, Int x, EmptyBuffer)
         | _ -> raise (BadBufferError "Unable to read int due to bad buffer")
+	| Prefix (name, thing) ->
+        let (env', exp', stdinBuff') = (eval env thing stdinBuff) in
+            (env', Prefix (name, exp'), stdinBuff')
     ;;
 
 let rec stmntEvalLoop env exp stdinBuff =
@@ -139,3 +145,14 @@ let print_val v =
         | Language x -> print_language v
         | _ -> raise IllegalArgument
     ;;
+	
+let rec prefix s v =
+    let rec aux x = (
+        match x with
+            | [x] -> (s^x)
+            | x :: y -> (s^x) :: aux y
+            ) in
+                match v with
+                    | Language [] -> Language []
+                    | Language x -> Language [aux x]
+;;

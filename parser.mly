@@ -16,7 +16,7 @@
 %token ASSIGNMENT
 %token ENDSTMNT
 %token <string> VAR
-%token READLANG READINT
+%token READLANG READINT PREFIX
 
 %right ASSIGNMENT
 
@@ -30,18 +30,19 @@
 %%
 
 parse_main:
-    | expr ENDSTMNT         {$1}
-    | expr ENDSTMNT EOF {$1}
-    | expr ENDSTMNT parse_main    { Statement ($1, $3) }
+    | expr ENDSTMNT      			{$1}
+    | expr ENDSTMNT EOF				{$1}
+    | expr ENDSTMNT parse_main    	{ Statement ($1, $3) }
     ;
 
 expr:
     | INTEGER                   { Int $1 }
     | QUOTE STRING QUOTE        { String $2 }
     | VAR                       { Var $1 }
-    | VAR ASSIGNMENT expr    { Assign($1, $3) }
+    | VAR ASSIGNMENT expr    	{ Assign($1, $3) }
     | READLANG                  { ReadLanguage }
-    | READINT                  { ReadInt }
+    | READINT                  	{ ReadInt }
+	| PREFIX					{ Prefix }
 
 parse_input:
     | LPAR lang RPAR parse_input    { StdinBuff (Language $2, $4) }
