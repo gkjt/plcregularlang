@@ -102,7 +102,7 @@ let rec evalProg exp =
 let rec print_language v =
     let rec aux x = (
         match x with
-            | x :: y -> print_string (","^x); aux y
+            | x :: y -> print_string (x^","); aux y
             | [x] -> print_string (x^"}")
             ) in
                 match v with
