@@ -13,11 +13,13 @@ let rec set_union set1 set2 =
     | x::y -> set_union y (set_add set2 x);;
 
 let rec conc v1 v2 =
-    let rec aux1 x = (
+    let rec aux1 x z = (
         match x with
-            | [x] -> [(v1^x)]
-            | x :: y -> (v1^x) :: aux1 y
-            ) in let rec aux2 x = (
-				| [x] -> aux1 x
-				| x :: y -> aux1 x :: aux2 y
-			) in aux2 v2;;
+            | [x] -> [(x^z)]
+            | x :: y -> (x^z) :: aux1 y z
+	) in
+	let rec aux2 x = (
+		match x with
+			| [x] -> aux1 v1 x
+			| x :: y -> aux1 v1 x :: aux2 y
+	) in aux2 v2;;
