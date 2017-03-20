@@ -19,7 +19,7 @@
 %token ENDSTMNT
 %token <string> VAR
 %token READLANG READINT
-%token PREFIX
+%token CONC
 %token SETUNION SETINTERSECT
 
 %right ASSIGNMENT

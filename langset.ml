@@ -12,7 +12,7 @@ let rec set_union set1 set2 =
     | [x] -> set_add set2 x
     | x::y -> set_union y (set_add set2 x);;
 
-let rec conc v1 v2 =
+let rec set_concatenate v1 v2 =
     let rec aux1 x z = (
         match x with
             | [x] -> [(x^z)]
@@ -23,7 +23,7 @@ let rec conc v1 v2 =
 			| [x] -> aux1 v1 x
 			| x :: y -> aux1 v1 x :: aux2 y
 	) in aux2 v2;;
-    
+
 let rec set_intersection set1 set2 =
         let rec aux2 el set2 =
             match set2 with
@@ -38,4 +38,3 @@ let rec set_intersection set1 set2 =
             match res with
             | false -> set_intersection y set2
             | true -> x :: set_intersection y set2;;
->>>>>>> refs/remotes/origin/master
