@@ -20,7 +20,10 @@ and prog = parse
     | "readlang"                { READLANG }
     | "readint"                 { READINT }
     | "U"                       { SETUNION }
+    | "print"                   { PRINT }
     | ['a'-'z']+ as lxm         { VAR (lxm) }
     | ';'                       { ENDSTMNT }
     | '"'                       { QUOTE }
     | '='                       { ASSIGNMENT }
+    | '('                       { OBRACK }
+    | ')'                       { CBRACK }

@@ -7,11 +7,12 @@
 
 
 %token EOF
-%token RPAR LPAR
+%token RPAR LPAR OBRACK CBRACK
 %token <int> INTEGER
 %token <string> WORD
 %token EMPTYWORD
 %token SEPARATOR
+%token PRINT
 %token QUOTE
 %token <string> STRING
 %token ASSIGNMENT
@@ -38,6 +39,7 @@ parse_main:
     ;
 
 expr:
+    | OBRACK expr CBRACK        { $2 }
     | INTEGER                   { Int $1 }
     | QUOTE STRING QUOTE        { String $2 }
     | VAR                       { Var $1 }
@@ -45,6 +47,8 @@ expr:
     | READLANG                  { ReadLanguage }
     | READINT                   { ReadInt }
     | expr SETUNION expr        { Union ($1, $3)}
+    | PRINT expr INTEGER        { PrintSome ($2, $3) }
+    | PRINT expr                { Print ($2) }
 
 parse_input:
     | LPAR lang RPAR parse_input    { StdinBuff (Language $2, $4) }
