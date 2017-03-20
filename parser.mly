@@ -39,7 +39,7 @@ expr:
     | INTEGER                   { Int $1 }
     | QUOTE STRING QUOTE        { String $2 }
     | VAR                       { Var $1 }
-    | VAR ASSIGNMENT INTEGER    { Assign($1, Int($3)) }
+    | VAR ASSIGNMENT expr    { Assign($1, $3) }
     | READLANG                  { ReadLanguage }
 
 parse_input:
