@@ -18,12 +18,9 @@
 %token ASSIGNMENT
 %token ENDSTMNT
 %token <string> VAR
-<<<<<<< HEAD
-%token READLANG READINT PREFIX
-=======
 %token READLANG READINT
+%token PREFIX
 %token SETUNION
->>>>>>> origin/master
 
 %right ASSIGNMENT
 
@@ -45,21 +42,15 @@ parse_main:
 expr:
     | OBRACK expr CBRACK        { $2 }
     | INTEGER                   { Int $1 }
-    | QUOTE STRING QUOTE        { String $2 }
+    | STRING                    { String $1 }
     | VAR                       { Var $1 }
-<<<<<<< HEAD
     | VAR ASSIGNMENT expr    	{ Assign($1, $3) }
     | READLANG                  { ReadLanguage }
     | READINT                  	{ ReadInt }
-	| PREFIX					{ Prefix }
-=======
-    | VAR ASSIGNMENT expr       { Assign($1, $3) }
-    | READLANG                  { ReadLanguage }
-    | READINT                   { ReadInt }
+	| PREFIX expr expr			{ Prefix( $2, $3) }
     | expr SETUNION expr        { Union ($1, $3)}
     | PRINT expr INTEGER        { PrintSome ($2, $3) }
     | PRINT expr                { Print ($2) }
->>>>>>> origin/master
 
 parse_input:
     | LPAR lang RPAR parse_input    { StdinBuff (Language $2, $4) }

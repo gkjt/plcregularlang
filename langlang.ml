@@ -23,13 +23,10 @@ type langTerm =
     | Assign of string * langTerm
     | ReadLanguage
     | ReadInt
-<<<<<<< HEAD
-	| Prefix of string * langTerm
-=======
+	| Prefix of langTerm * langTerm
     | Union of langTerm * langTerm
     | Print of langTerm
     | PrintSome of langTerm * int
->>>>>>> origin/master
 ;;
 
 type stdinBuffer = StdinBuff of langTerm * stdinBuffer
@@ -57,8 +54,6 @@ let rec isVal v =
         | Int x -> true
         | String x -> true
         | Language x -> true
-        | ReadLanguage -> true
-        | ReadInt -> true
         | _ -> false
 ;;
 
@@ -77,10 +72,7 @@ let rec typeOf env exp =
             (addBinding env x tz, tz)
     | ReadLanguage -> (env, LangType)
     | ReadInt -> (env, IntType)
-<<<<<<< HEAD
-	| Prefix (x, z) -> (env, LangType)
-    | _ -> raise TypeError
-=======
+	| Prefix (s, lang) -> (env, UnitType)
     | Union (lang1, lang2) ->
         (match typeOf env lang1 with
             | (e, LangType) ->
@@ -99,7 +91,6 @@ let rec typeOf env exp =
             | LangType -> (env, UnitType)
             | IntType  | StringType | StatementType | UnitType -> raise (TypeError "Can only print with 2 params on Langs"))
     | _ -> raise (TypeError "Unimplemented type")
->>>>>>> origin/master
 ;;
 
 let rec typeCheckProgram statement =
@@ -110,18 +101,6 @@ let rec typeCheckProgram statement =
         | x -> typeOf (Env []) x
 ;;
 
-
-<<<<<<< HEAD
-let rec isVal v =
-    match v with
-        | Int x -> true
-        | String x -> true
-        | Language x -> true
-        | ReadLanguage -> true
-        | ReadInt -> true
-		| Prefix (x, z) -> true
-        | _ -> false
-=======
 let rec print_some_language lang count =
     let rec aux x count =
     if(count > 0) then (match x with
@@ -147,7 +126,6 @@ let rec print_language v =
                     | Language [] -> print_string "{}"
                     | Language x -> print_string "{"; aux x
                     | _ -> raise (TypeError "Not a language")
->>>>>>> origin/master
 ;;
 
 let print_val v =
@@ -162,7 +140,7 @@ let print_val v =
 
 let rec eval env exp stdinBuff =
     match exp with
-    | Statement (x, y) -> let (env', expr', stdinBuff') = eval env x stdinBuff in eval env' y stdinBuff'
+    | Statement (x, y) -> let (env', x', stdinBuff') = stmntEvalLoop env x stdinBuff in eval env' y stdinBuff'
     | Int x -> raise Terminated
     | String x -> raise Terminated
     | Language x -> raise Terminated
@@ -170,8 +148,8 @@ let rec eval env exp stdinBuff =
     | Assign (name, thing) when (isVal thing) ->
         ( (addBinding env name thing), thing, stdinBuff)
     | Assign (name, thing) ->
-        let (env', exp', stdinBuff') = (eval env thing stdinBuff) in
-            (env', Assign (name, exp'), stdinBuff')
+        let (env', thing', stdinBuff') = (eval env thing stdinBuff) in
+            (env', Assign (name, thing'), stdinBuff')
     | ReadLanguage -> (match stdinBuff with
         | StdinBuff (Language x, StdinInt y) -> (env, Language x, StdinInt y)
         | StdinBuff (Language x, StdinBuff (y,z)) -> (env, (Language x), StdinBuff (y,z))
@@ -179,13 +157,10 @@ let rec eval env exp stdinBuff =
         | _ -> raise (BadBufferError "Unable to read lang due to bad buffer"))
     | ReadInt -> (match stdinBuff with
         | StdinInt x -> (env, Int x, EmptyBuffer)
-<<<<<<< HEAD
-        | _ -> raise (BadBufferError "Unable to read int due to bad buffer")
-	| Prefix (name, thing) ->
-        let (env', exp', stdinBuff') = (eval env thing stdinBuff) in
-            (env', Prefix (name, exp'), stdinBuff')
-=======
         | _ -> raise (BadBufferError "Unable to read int due to bad buffer"))
+	| Prefix (String x, Language y) -> (env, Language (prefix x y), stdinBuff)
+	| Prefix (x, Language y) -> let (env', x', stdinBuff') = eval env x stdinBuff in (env, Prefix (x', Language y), stdinBuff)
+	| Prefix (x, y) -> let (env', y', stdinBuff') = eval env y stdinBuff in (env, Prefix (x, y'), stdinBuff)
     | Union (Language x, Language y) -> (env, Language (set_union x y), stdinBuff)
     | Union (Language x, y) ->
         let (env', y', stdinBuff') = eval env y stdinBuff in
@@ -193,19 +168,17 @@ let rec eval env exp stdinBuff =
     | Union (x, y) ->
         let (env', x', stdinBuff') = eval env x stdinBuff in
             (env', Union(x', y), stdinBuff')
-    | Union (_, _) -> raise IllegalArgument
-    | Print x when isVal x -> print_val x; raise Terminated
-    | Print x -> let (env', x', buff') = eval env x stdinBuff
-        in (env', Print x', buff')
+    | Print x when isVal x -> let () = print_val x in
+        raise Terminated
+    | Print x -> let (env', x', buff') = eval env x stdinBuff in
+        (env', Print x', buff')
     | PrintSome ((Language x), count) ->
-        print_some_language (Language x) count;
+        let () = print_some_language (Language x) count in
         raise Terminated
     | PrintSome (x, count) -> let (env', x', buff') = eval env x stdinBuff
         in (env', PrintSome(x', count), buff')
->>>>>>> origin/master
-    ;;
 
-let rec stmntEvalLoop env exp stdinBuff =
+and stmntEvalLoop env exp stdinBuff =
     try
         let (env', exp', stdinBuff') = eval env exp stdinBuff in
             stmntEvalLoop env' exp' stdinBuff'
@@ -220,38 +193,3 @@ let rec stmntEvalLoop env exp stdinBuff =
 let rec evalProg exp stdinBuff =
     let (env,result,_) = stmntEvalLoop (Env []) exp stdinBuff in
         (env, result);;
-<<<<<<< HEAD
-
-let rec print_language v =
-    let rec aux x =
-        match x with
-            | [x] -> print_string (x^"}")
-            | x :: y -> print_string (x^","); aux y
-            | _ ->  print_string "}"
-        in
-                match v with
-                    | Language [] -> print_string "{}"
-                    | Language x -> print_string "{"; aux x
-                    | _ -> raise TypeError
-;;
-
-let print_val v =
-    match v with
-        | Int i -> print_string "Int: "; print_int i
-        | String i -> print_string "String: "; print_string i
-        | Language x -> print_language v
-        | _ -> raise IllegalArgument
-    ;;
-	
-let rec prefix s v =
-    let rec aux x = (
-        match x with
-            | [x] -> (s^x)
-            | x :: y -> (s^x) :: aux y
-            ) in
-                match v with
-                    | Language [] -> Language []
-                    | Language x -> Language [aux x]
-;;
-=======
->>>>>>> origin/master
