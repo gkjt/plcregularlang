@@ -18,3 +18,18 @@ let rec prefix s v =
             | [x] -> [(s^x)]
             | x :: y -> (s^x) :: aux y
             ) in aux v;;
+
+let rec set_intersection set1 set2 =
+        let rec aux2 el set2 =
+            match set2 with
+            | [] -> true
+            | [x] -> if (x = el) then true else false
+            | x :: y -> if (x = el) then true else aux2 el y
+        in
+        match set1 with
+        | [] -> []
+        | [x] -> if(aux2 x set2) then [x] else []
+        | x :: y -> let res = aux2 x set2 in
+            match res with
+            | false -> set_intersection y set2
+            | true -> x :: set_intersection y set2;;
