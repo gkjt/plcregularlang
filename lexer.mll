@@ -21,6 +21,7 @@ and prog = parse
     | "readint"                 { READINT }
 	| "conc"					{ CONC }
     | "U"                       { SETUNION }
+    | "I"                       { SETINTERSECT }
     | "print"                   { PRINT }
     | '"' ['a'-'z']+ as lxm '"' { STRING (lxm) }
     | ['a'-'z']+ as lxm         { VAR (lxm) }

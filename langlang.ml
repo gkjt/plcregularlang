@@ -25,6 +25,7 @@ type langTerm =
     | ReadInt
 	| Conc of langTerm * langTerm
     | Union of langTerm * langTerm
+    | Intersection of langTerm * langTerm
     | Print of langTerm
     | PrintSome of langTerm * int
 ;;
@@ -80,6 +81,13 @@ let rec typeOf env exp =
                 then (env, LangType)
                 else raise (TypeError "Union must be two Languages")
             | _ -> raise (TypeError "Union must be two Languages"))
+    | Intersection (lang1, lang2) ->
+        (match typeOf env lang1 with
+            | (e, LangType) ->
+                if (e, LangType) = typeOf env lang2
+                then (env, LangType)
+                else raise (TypeError "Intersection must be two Languages")
+            | _ -> raise (TypeError "Intersection must be two Languages"))
     | Print x when isVal x -> (env, UnitType)
     | Print x -> let (env', typeOfThing) = typeOf env x in
         (match typeOfThing with
@@ -168,6 +176,13 @@ let rec eval env exp stdinBuff =
     | Union (x, y) ->
         let (env', x', stdinBuff') = eval env x stdinBuff in
             (env', Union(x', y), stdinBuff')
+    | Intersection(Language x, Language y) -> (env, Language (set_intersection x y), stdinBuff)
+    | Intersection(Language x, y) ->
+        let (env', y', stdinBuff') = eval env y stdinBuff in
+            (env', Intersection(Language x, y'), stdinBuff')
+    | Intersection(x, y) ->
+        let (env', x', stdinBuff') = eval env x stdinBuff in
+            (env', Intersection(x', y), stdinBuff')
     | Print x when isVal x -> let () = print_val x in
         raise Terminated
     | Print x -> let (env', x', buff') = eval env x stdinBuff in

@@ -19,8 +19,8 @@
 %token ENDSTMNT
 %token <string> VAR
 %token READLANG READINT
-%token CONC
-%token SETUNION
+%token PREFIX
+%token SETUNION SETINTERSECT
 
 %right ASSIGNMENT
 
@@ -49,6 +49,7 @@ expr:
     | READINT                  	{ ReadInt }
 	| CONC expr expr			{ Conc($2, $3) }
     | expr SETUNION expr        { Union ($1, $3)}
+    | expr SETINTERSECT expr    { Intersection ($1, $3)}
     | PRINT expr INTEGER        { PrintSome ($2, $3) }
     | PRINT expr                { Print ($2) }
 
