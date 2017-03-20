@@ -1,4 +1,4 @@
 asdf = 256;
 l = readlang;
-m = readlang;
-prefix "a" m;
+m = conc "a" l;
+print m;
