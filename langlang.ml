@@ -23,6 +23,7 @@ type langTerm =
     | Assign of string * langTerm
     | ReadLanguage
     | ReadInt
+    | Union of langTerm * langTerm
 ;;
 
 type stdinBuffer = StdinBuff of langTerm * stdinBuffer
@@ -60,6 +61,13 @@ let rec typeOf env exp =
             (addBinding env x tz, tz)
     | ReadLanguage -> (env, LangType)
     | ReadInt -> (env, IntType)
+    | Union (lang1, lang2) ->
+        match typeOf env lang1 with
+            | (e, LangType) ->
+                if (e, LangType) = typeOf env lang2
+                then (env, LangType)
+                else raise TypeError
+            | _ -> raise TypeError
     | _ -> raise TypeError
 ;;
 
@@ -100,9 +108,17 @@ let rec eval env exp stdinBuff =
         | StdinBuff (Language x, StdinBuff (y,z)) -> (env, (Language x), StdinBuff (y,z))
         | StdinInt x -> raise EmptyBufferError
         | _ -> raise (BadBufferError "Unable to read lang due to bad buffer"))
-    | ReadInt -> match stdinBuff with
+    | ReadInt -> (match stdinBuff with
         | StdinInt x -> (env, Int x, EmptyBuffer)
-        | _ -> raise (BadBufferError "Unable to read int due to bad buffer")
+        | _ -> raise (BadBufferError "Unable to read int due to bad buffer"))
+    | Union (Language x, Language y) -> (env, Language (set_union x y), stdinBuff)
+    | Union (Language x, y) ->
+        let (env', y', stdinBuff') = eval env y stdinBuff in
+            (env', Union(Language x, y'), stdinBuff')
+    | Union (x, y) ->
+        let (env', x', stdinBuff') = eval env x stdinBuff in
+            (env', Union(x', y), stdinBuff')
+    | Union (_, _) -> raise IllegalArgument
     ;;
 
 let rec stmntEvalLoop env exp stdinBuff =
