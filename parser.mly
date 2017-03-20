@@ -16,13 +16,14 @@
 %token ASSIGNMENT
 %token ENDSTMNT
 %token <string> VAR
+%token READLANG
 
 %right ASSIGNMENT
 
 %start parse_main
 %start parse_input
 %type <Langlang.langTerm> parse_main
-%type <Langlang.langTerm> parse_input
+%type <Langlang.stdinBuffer> parse_input
 %type <Langlang.word list> lang
 %type <Langlang.word> word
 
@@ -39,12 +40,11 @@ expr:
     | QUOTE STRING QUOTE        { String $2 }
     | VAR                       { Var $1 }
     | VAR ASSIGNMENT INTEGER    { Assign($1, Int($3)) }
-    | READLANG                  { ReadLang }
+    | READLANG                  { ReadLanguage }
 
 parse_input:
-    | LPAR lang RPAR parse_input    { (Language $2) :: $4 }
-    | LPAR lang RPAR                { Language $2 }
-    | INTEGER                       { Int $1 }
+    | LPAR lang RPAR parse_input    { StdinBuff (Language $2, $4) }
+    | LPAR lang RPAR INTEGER        { StdinBuff (Language $2, StdinInt $4) }
 
 lang:
     | word SEPARATOR lang   { $1 :: $3 }

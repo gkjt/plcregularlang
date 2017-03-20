@@ -13,7 +13,7 @@ let parseProgram =
         parse_main prog lexbuf
     with Parsing.Parse_error -> failwith "Parse Failure on Program"
 
-let parseInput =
+let stdinBuff =
     try let lexbuf = Lexing.from_channel stdin in
         parse_input language lexbuf
     with Parsing.Parse_error -> failwith "Parse Failure on Input"
@@ -23,6 +23,6 @@ let parsedProg = parseProgram in
     let () = print_string "Parsing Completed\n" in
         let _ = typeCheckProgram parsedProg in
             let () = print_string "Type Checking Completed\n" in
-                let (env, result) = evalProg parsedProg in
+                let (env, result) = evalProg parsedProg stdinBuff in
                     let () = print_string "Result: " ; print_val result in
                         flush stdout;;

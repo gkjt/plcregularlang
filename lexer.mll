@@ -17,8 +17,8 @@ and prog = parse
     | [' ' '\t' '\n']           { prog lexbuf } (* skip whitespace and newlines *)
     | eof                       { EOF }
     | ['0'-'9']+ as lxm         { INTEGER (int_of_string lxm) }
+    | "readlang"                { READLANG }
     | ['a'-'z']+ as lxm         { VAR (lxm) }
     | ';'                       { ENDSTMNT }
     | '"'                       { QUOTE }
     | '='                       { ASSIGNMENT }
-    | "readlang"                { READLANG }

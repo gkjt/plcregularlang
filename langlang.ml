@@ -1,8 +1,10 @@
-exception TypeError;;
-exception Terminated;;
-exception VarNotExist;;
-exception Stuck;;
-exception UnexpectedEnd;;
+exception Stuck
+exception TypeError
+exception Terminated
+exception VarNotExist
+exception UnexpectedEnd
+exception IllegalArgument
+exception EmptyBufferError
 
 
 type langType = IntType | FunType | LangType | StringType | StatementType;;
@@ -16,8 +18,11 @@ type langTerm =
     | Language of word list
     | Var of string
     | Assign of string * langTerm
-    | ReadLang
+    | ReadLanguage
 ;;
+
+type stdinBuffer = StdinBuff of langTerm * stdinBuffer
+    | StdinInt of int;;
 
 type 'a context = Env of (string * 'a) list;;
 type typEnv = langType context;;
@@ -47,7 +52,7 @@ let rec typeOf env exp =
     | Assign (x, z) ->
         let (env', tz) = (typeOf env z) in
             (addBinding env x tz, tz)
-    | ReadLang -> (env, LangType)
+    | ReadLanguage -> (env, LangType)
     | _ -> raise TypeError
 ;;
 
@@ -65,49 +70,57 @@ let rec isVal v =
         | Int x -> true
         | String x -> true
         | Language x -> true
-        | ReadLang -> true;
+        | ReadLanguage -> true;
         | _ -> false
 ;;
 
 
-let rec eval env exp =
+let rec eval env exp stdinBuff =
     match exp with
-    | Statement (x, y) -> let (env', expr') = eval env x in eval env' y
+    | Statement (x, y) -> let (env', expr', stdinBuff') = eval env x stdinBuff in eval env' y stdinBuff'
     | Int x -> raise Terminated
     | String x -> raise Terminated
     | Language x -> raise Terminated
-    | Var x -> (env, lookup env x)
+    | Var x -> (env, lookup env x, stdinBuff)
     | Assign (name, thing) when (isVal thing) ->
-        ( (addBinding env name thing), thing)
+        ( (addBinding env name thing), thing, stdinBuff)
     | Assign (name, thing) ->
-        let (env', exp') = (eval env thing) in
-            (env', Assign (name, exp'))
+        let (env', exp', stdinBuff') = (eval env thing stdinBuff) in
+            (env', Assign (name, exp'), stdinBuff')
+    | ReadLanguage -> match stdinBuff with
+        | StdinBuff (Language x, StdinInt y) -> (env, (Language x), (StdinInt y))
+        | StdinBuff (Language x, y) -> (env, (Language x), y)
+        | StdinInt x -> raise EmptyBufferError
+        | _ -> raise TypeError
     ;;
 
-let rec stmntEvalLoop env exp =
+let rec stmntEvalLoop env exp stdinBuff =
     try
-        let (env', exp') = eval env exp in
-            stmntEvalLoop env' exp'
-    with Terminated ->  (env, exp);;
+        let (env', exp', stdinBuff') = eval env exp stdinBuff in
+            stmntEvalLoop env' exp' stdinBuff'
+    with Terminated ->  (env, exp, stdinBuff);;
 
-let rec progEvalLoop env expList =
+(* let rec progEvalLoop env expList =
     match expList with
         | [x] -> stmntEvalLoop env x
-        | x :: y -> let (env', exp) = stmntEvalLoop env x; in progEvalLoop env' y
-    ;;
+        | x :: y -> let (env', exp, stdinBuff') = stmntEvalLoop env x; in progEvalLoop env' y
+    ;; *)
 
-let rec evalProg exp =
-    stmntEvalLoop (Env []) exp;;
+let rec evalProg exp stdinBuff =
+    let (env,result,_) = stmntEvalLoop (Env []) exp stdinBuff in
+        (env, result);;
 
 let rec print_language v =
-    let rec aux x = (
+    let rec aux x =
         match x with
-            | x :: y -> print_string (x^","); aux y
             | [x] -> print_string (x^"}")
-            ) in
+            | x :: y -> print_string (x^","); aux y
+            | _ ->  print_string "}"
+        in
                 match v with
                     | Language [] -> print_string "{}"
                     | Language x -> print_string "{"; aux x
+                    | _ -> raise TypeError
 ;;
 
 let print_val v =
@@ -115,4 +128,5 @@ let print_val v =
         | Int i -> print_string "Int: "; print_int i
         | String i -> print_string "String: "; print_string i
         | Language x -> print_language v
+        | _ -> raise TypeError
     ;;
