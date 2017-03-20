@@ -3,6 +3,8 @@ open Parser
 open Lexer
 open Arg
 open Printf
+open Langset
+;;
 
 let channel =
     try (open_in Sys.argv.(1))

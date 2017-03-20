@@ -1,5 +1,6 @@
 %{
     open Langlang
+    open Langset
     exception EOF
     exception EndOfProgram
 %}
@@ -39,16 +40,16 @@ expr:
     | INTEGER                   { Int $1 }
     | QUOTE STRING QUOTE        { String $2 }
     | VAR                       { Var $1 }
-    | VAR ASSIGNMENT expr    { Assign($1, $3) }
+    | VAR ASSIGNMENT expr       { Assign($1, $3) }
     | READLANG                  { ReadLanguage }
-    | READINT                  { ReadInt }
+    | READINT                   { ReadInt }
 
 parse_input:
     | LPAR lang RPAR parse_input    { StdinBuff (Language $2, $4) }
     | LPAR lang RPAR INTEGER        { StdinBuff (Language $2, StdinInt $4) }
 
 lang:
-    | word SEPARATOR lang   { $1 :: $3 }
+    | word SEPARATOR lang   { set_add $3 $1 }
     | word { [$1] }
 
 word:
