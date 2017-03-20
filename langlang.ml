@@ -5,16 +5,18 @@ exception Stuck;;
 exception UnexpectedEnd;;
 
 
-type langType = IntType | FunType | LangType | StringType;;
+type langType = IntType | FunType | LangType | StringType | StatementType;;
 
 type word = string;;
 
 type langTerm =
+    | Statement of langTerm * langTerm
     | Int of int
     | String of string
     | Language of word list
     | Var of string
     | Assign of string * langTerm
+    | ReadLang
 ;;
 
 type 'a context = Env of (string * 'a) list;;
@@ -34,34 +36,48 @@ let rec lookup env lookfor =
 
 let rec typeOf env exp =
     match exp with
-    | Int(n) -> IntType
-    | String(x) -> StringType
-    | Language(x) -> LangType
-    | Var x -> typeOf env (lookup env x)
-    | Assign (x, z) -> typeOf env z
-    | _ -> raise TypeError;;
+    | Statement (x,y) ->
+        let (env', t) = typeOf env x in
+        let env'', t2 = typeOf env' y in
+            (env'', StatementType)
+    | Int(n) -> (env, IntType)
+    | String(x) -> (env, StringType)
+    | Language(x) -> (env, LangType)
+    | Var (x) -> (env, (lookup env x))
+    | Assign (x, z) ->
+        let (env', tz) = (typeOf env z) in
+            (addBinding env x tz, tz)
+    | ReadLang -> (env, LangType)
+    | _ -> raise TypeError
+;;
 
-let rec typeCheckProgram expList =
-    match expList with
-        | [x] -> typeOf (Env[]) x
-        | x::y -> typeOf (Env[]) x; typeCheckProgram y
+let rec typeCheckProgram statement =
+    match statement with
+        | Statement(x, y) ->
+            let (env, typeOfFirst) = typeOf (Env[]) x in
+                typeOf env y;
+        | x -> typeOf (Env []) x
 ;;
 
 
-let rec isVal env v =
-    match (typeOf env v) with
-        | IntType | StringType | LangType -> true
+let rec isVal v =
+    match v with
+        | Int x -> true
+        | String x -> true
+        | Language x -> true
+        | ReadLang -> true;
         | _ -> false
 ;;
 
 
 let rec eval env exp =
     match exp with
+    | Statement (x, y) -> let (env', expr') = eval env x in eval env' y
     | Int x -> raise Terminated
     | String x -> raise Terminated
     | Language x -> raise Terminated
     | Var x -> (env, lookup env x)
-    | Assign (name, thing) when (isVal env thing) ->
+    | Assign (name, thing) when (isVal thing) ->
         ( (addBinding env name thing), thing)
     | Assign (name, thing) ->
         let (env', exp') = (eval env thing) in
@@ -72,7 +88,7 @@ let rec stmntEvalLoop env exp =
     try
         let (env', exp') = eval env exp in
             stmntEvalLoop env' exp'
-    with Terminated -> if (isVal env exp) then (env, exp) else raise Stuck;;
+    with Terminated ->  (env, exp);;
 
 let rec progEvalLoop env expList =
     match expList with
@@ -80,8 +96,8 @@ let rec progEvalLoop env expList =
         | x :: y -> let (env', exp) = stmntEvalLoop env x; in progEvalLoop env' y
     ;;
 
-let rec evalProg expList =
-    progEvalLoop (Env []) expList;;
+let rec evalProg exp =
+    stmntEvalLoop (Env []) exp;;
 
 let rec print_language v =
     let rec aux x = (
