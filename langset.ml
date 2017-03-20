@@ -12,9 +12,12 @@ let rec set_union set1 set2 =
     | [x] -> set_add set2 x
     | x::y -> set_union y (set_add set2 x);;
 
-let rec conc v0 v1 =
-    let rec aux x = (
+let rec conc v1 v2 =
+    let rec aux1 x = (
         match x with
-            | [x] -> [(v0^x)]
-            | x :: y -> (v0^x) :: aux y
-            ) in aux v1;;
+            | [x] -> [(v1^x)]
+            | x :: y -> (v1^x) :: aux1 y
+            ) in let rec aux2 x = (
+				| [x] -> aux1 x
+				| x :: y -> aux1 x :: aux2 y
+			) in aux2 v2;;

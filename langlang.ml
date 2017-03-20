@@ -72,7 +72,7 @@ let rec typeOf env exp =
             (addBinding env x tz, tz)
     | ReadLanguage -> (env, LangType)
     | ReadInt -> (env, IntType)
-	| Conc (x, y) -> (env, UnitType)
+	| Conc (x, y) -> (env, LangType)
     | Union (lang1, lang2) ->
         (match typeOf env lang1 with
             | (e, LangType) ->
@@ -158,7 +158,7 @@ let rec eval env exp stdinBuff =
     | ReadInt -> (match stdinBuff with
         | StdinInt x -> (env, Int x, EmptyBuffer)
         | _ -> raise (BadBufferError "Unable to read int due to bad buffer"))
-	| Conc (String x, Language y) -> (env, Language (conc x y), stdinBuff)
+	| Conc (Language x, Language y) -> (env, Language (conc x y), stdinBuff)
 	| Conc (x, Language y) -> let (env', x', stdinBuff') = eval env x stdinBuff in (env, Conc (x', Language y), stdinBuff)
 	| Conc (x, y) -> let (env', y', stdinBuff') = eval env y stdinBuff in (env, Conc (x, y'), stdinBuff)
     | Union (Language x, Language y) -> (env, Language (set_union x y), stdinBuff)
