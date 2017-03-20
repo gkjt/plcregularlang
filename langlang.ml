@@ -1,5 +1,6 @@
 exception Stuck
 exception TypeError
+exception BadBufferError of string
 exception Terminated
 exception VarNotExist
 exception UnexpectedEnd
@@ -19,10 +20,13 @@ type langTerm =
     | Var of string
     | Assign of string * langTerm
     | ReadLanguage
+    | ReadInt
 ;;
 
 type stdinBuffer = StdinBuff of langTerm * stdinBuffer
-    | StdinInt of int;;
+    | StdinInt of int
+    | EmptyBuffer
+;;
 
 type 'a context = Env of (string * 'a) list;;
 type typEnv = langType context;;
@@ -53,6 +57,7 @@ let rec typeOf env exp =
         let (env', tz) = (typeOf env z) in
             (addBinding env x tz, tz)
     | ReadLanguage -> (env, LangType)
+    | ReadInt -> (env, IntType)
     | _ -> raise TypeError
 ;;
 
@@ -70,7 +75,8 @@ let rec isVal v =
         | Int x -> true
         | String x -> true
         | Language x -> true
-        | ReadLanguage -> true;
+        | ReadLanguage -> true
+        | ReadInt -> true
         | _ -> false
 ;;
 
@@ -87,11 +93,14 @@ let rec eval env exp stdinBuff =
     | Assign (name, thing) ->
         let (env', exp', stdinBuff') = (eval env thing stdinBuff) in
             (env', Assign (name, exp'), stdinBuff')
-    | ReadLanguage -> match stdinBuff with
-        | StdinBuff (Language x, StdinInt y) -> (env, (Language x), (StdinInt y))
-        | StdinBuff (Language x, y) -> (env, (Language x), y)
+    | ReadLanguage -> (match stdinBuff with
+        | StdinBuff (Language x, StdinInt y) -> (env, Language x, StdinInt y)
+        | StdinBuff (Language x, StdinBuff (y,z)) -> (env, (Language x), StdinBuff (y,z))
         | StdinInt x -> raise EmptyBufferError
-        | _ -> raise TypeError
+        | _ -> raise (BadBufferError "Unable to read lang due to bad buffer"))
+    | ReadInt -> match stdinBuff with
+        | StdinInt x -> (env, Int x, EmptyBuffer)
+        | _ -> raise (BadBufferError "Unable to read int due to bad buffer")
     ;;
 
 let rec stmntEvalLoop env exp stdinBuff =
@@ -128,5 +137,5 @@ let print_val v =
         | Int i -> print_string "Int: "; print_int i
         | String i -> print_string "String: "; print_string i
         | Language x -> print_language v
-        | _ -> raise TypeError
+        | _ -> raise IllegalArgument
     ;;

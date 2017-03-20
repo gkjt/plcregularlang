@@ -16,7 +16,7 @@
 %token ASSIGNMENT
 %token ENDSTMNT
 %token <string> VAR
-%token READLANG
+%token READLANG READINT
 
 %right ASSIGNMENT
 
@@ -41,6 +41,7 @@ expr:
     | VAR                       { Var $1 }
     | VAR ASSIGNMENT expr    { Assign($1, $3) }
     | READLANG                  { ReadLanguage }
+    | READINT                  { ReadInt }
 
 parse_input:
     | LPAR lang RPAR parse_input    { StdinBuff (Language $2, $4) }

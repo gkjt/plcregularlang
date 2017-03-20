@@ -18,6 +18,7 @@ and prog = parse
     | eof                       { EOF }
     | ['0'-'9']+ as lxm         { INTEGER (int_of_string lxm) }
     | "readlang"                { READLANG }
+    | "readint"                 { READINT }
     | ['a'-'z']+ as lxm         { VAR (lxm) }
     | ';'                       { ENDSTMNT }
     | '"'                       { QUOTE }
