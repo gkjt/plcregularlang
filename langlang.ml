@@ -1,3 +1,5 @@
+open Langset;;
+
 exception Stuck
 exception TypeError
 exception BadBufferError of string
