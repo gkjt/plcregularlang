@@ -1,5 +1,7 @@
+open Langset;;
+
 exception Stuck
-exception TypeError
+exception TypeError of string
 exception BadBufferError of string
 exception Terminated
 exception VarNotExist
@@ -8,7 +10,7 @@ exception IllegalArgument
 exception EmptyBufferError
 
 
-type langType = IntType | FunType | LangType | StringType | StatementType;;
+type langType = IntType | LangType | StringType | StatementType | UnitType;;
 
 type word = string;;
 
@@ -21,7 +23,13 @@ type langTerm =
     | Assign of string * langTerm
     | ReadLanguage
     | ReadInt
+<<<<<<< HEAD
 	| Prefix of string * langTerm
+=======
+    | Union of langTerm * langTerm
+    | Print of langTerm
+    | PrintSome of langTerm * int
+>>>>>>> origin/master
 ;;
 
 type stdinBuffer = StdinBuff of langTerm * stdinBuffer
@@ -44,6 +52,16 @@ let rec lookup env lookfor =
             | false -> lookup (Env t) lookfor
 ;;
 
+let rec isVal v =
+    match v with
+        | Int x -> true
+        | String x -> true
+        | Language x -> true
+        | ReadLanguage -> true
+        | ReadInt -> true
+        | _ -> false
+;;
+
 let rec typeOf env exp =
     match exp with
     | Statement (x,y) ->
@@ -59,8 +77,29 @@ let rec typeOf env exp =
             (addBinding env x tz, tz)
     | ReadLanguage -> (env, LangType)
     | ReadInt -> (env, IntType)
+<<<<<<< HEAD
 	| Prefix (x, z) -> (env, LangType)
     | _ -> raise TypeError
+=======
+    | Union (lang1, lang2) ->
+        (match typeOf env lang1 with
+            | (e, LangType) ->
+                if (e, LangType) = typeOf env lang2
+                then (env, LangType)
+                else raise (TypeError "Union must be two Languages")
+            | _ -> raise (TypeError "Union must be two Languages"))
+    | Print x when isVal x -> (env, UnitType)
+    | Print x -> let (env', typeOfThing) = typeOf env x in
+        (match typeOfThing with
+            | IntType | LangType | StringType -> (env, UnitType)
+            | StatementType | UnitType -> raise (TypeError "Can only print Ints, Langs and Strings"))
+    | PrintSome (Language x, count) -> (env, UnitType)
+    | PrintSome (x, count) -> let (env', typeOfThing) = typeOf env x in
+        (match typeOfThing with
+            | LangType -> (env, UnitType)
+            | IntType  | StringType | StatementType | UnitType -> raise (TypeError "Can only print with 2 params on Langs"))
+    | _ -> raise (TypeError "Unimplemented type")
+>>>>>>> origin/master
 ;;
 
 let rec typeCheckProgram statement =
@@ -72,6 +111,7 @@ let rec typeCheckProgram statement =
 ;;
 
 
+<<<<<<< HEAD
 let rec isVal v =
     match v with
         | Int x -> true
@@ -81,7 +121,43 @@ let rec isVal v =
         | ReadInt -> true
 		| Prefix (x, z) -> true
         | _ -> false
+=======
+let rec print_some_language lang count =
+    let rec aux x count =
+    if(count > 0) then (match x with
+        | [x] -> print_string (x^"}")
+        | x :: y -> if(count = 1) then print_string x
+            else print_string (x^", "); aux y (count-1)
+        | _ ->  print_string "}") else print_string "}\n"
+    in
+        match lang with
+            | Language [] -> print_string "{}\n"
+            | Language x -> print_string "{"; aux x count
+            | _ -> raise (TypeError "Not a language")
 ;;
+
+let rec print_language v =
+    let rec aux x =
+        match x with
+            | [x] -> print_string (x^"}")
+            | x :: y -> print_string (x^","); aux y
+            | _ ->  print_string "}"
+        in
+                match v with
+                    | Language [] -> print_string "{}"
+                    | Language x -> print_string "{"; aux x
+                    | _ -> raise (TypeError "Not a language")
+>>>>>>> origin/master
+;;
+
+let print_val v =
+    match v with
+        | Int i -> print_int i; print_string "\n"
+        | String i -> print_string i; print_string "\n"
+        | Language x -> print_language v; print_string "\n"
+        | _ -> raise IllegalArgument
+    ;;
+
 
 
 let rec eval env exp stdinBuff =
@@ -101,12 +177,32 @@ let rec eval env exp stdinBuff =
         | StdinBuff (Language x, StdinBuff (y,z)) -> (env, (Language x), StdinBuff (y,z))
         | StdinInt x -> raise EmptyBufferError
         | _ -> raise (BadBufferError "Unable to read lang due to bad buffer"))
-    | ReadInt -> match stdinBuff with
+    | ReadInt -> (match stdinBuff with
         | StdinInt x -> (env, Int x, EmptyBuffer)
+<<<<<<< HEAD
         | _ -> raise (BadBufferError "Unable to read int due to bad buffer")
 	| Prefix (name, thing) ->
         let (env', exp', stdinBuff') = (eval env thing stdinBuff) in
             (env', Prefix (name, exp'), stdinBuff')
+=======
+        | _ -> raise (BadBufferError "Unable to read int due to bad buffer"))
+    | Union (Language x, Language y) -> (env, Language (set_union x y), stdinBuff)
+    | Union (Language x, y) ->
+        let (env', y', stdinBuff') = eval env y stdinBuff in
+            (env', Union(Language x, y'), stdinBuff')
+    | Union (x, y) ->
+        let (env', x', stdinBuff') = eval env x stdinBuff in
+            (env', Union(x', y), stdinBuff')
+    | Union (_, _) -> raise IllegalArgument
+    | Print x when isVal x -> print_val x; raise Terminated
+    | Print x -> let (env', x', buff') = eval env x stdinBuff
+        in (env', Print x', buff')
+    | PrintSome ((Language x), count) ->
+        print_some_language (Language x) count;
+        raise Terminated
+    | PrintSome (x, count) -> let (env', x', buff') = eval env x stdinBuff
+        in (env', PrintSome(x', count), buff')
+>>>>>>> origin/master
     ;;
 
 let rec stmntEvalLoop env exp stdinBuff =
@@ -124,6 +220,7 @@ let rec stmntEvalLoop env exp stdinBuff =
 let rec evalProg exp stdinBuff =
     let (env,result,_) = stmntEvalLoop (Env []) exp stdinBuff in
         (env, result);;
+<<<<<<< HEAD
 
 let rec print_language v =
     let rec aux x =
@@ -156,3 +253,5 @@ let rec prefix s v =
                     | Language [] -> Language []
                     | Language x -> Language [aux x]
 ;;
+=======
+>>>>>>> origin/master

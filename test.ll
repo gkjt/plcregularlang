@@ -1,6 +1,8 @@
 asdf = 256;
 asdf;
-readlang;
-readlang;
+l = readlang;
+m = readlang;
 a = readint;
-a;
+print m;
+print m 5;
+m U l;

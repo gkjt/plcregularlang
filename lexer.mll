@@ -19,8 +19,15 @@ and prog = parse
     | ['0'-'9']+ as lxm         { INTEGER (int_of_string lxm) }
     | "readlang"                { READLANG }
     | "readint"                 { READINT }
+<<<<<<< HEAD
 	| "prefix"					{ PREFIX }
+=======
+    | "U"                       { SETUNION }
+    | "print"                   { PRINT }
+>>>>>>> origin/master
     | ['a'-'z']+ as lxm         { VAR (lxm) }
     | ';'                       { ENDSTMNT }
     | '"'                       { QUOTE }
     | '='                       { ASSIGNMENT }
+    | '('                       { OBRACK }
+    | ')'                       { CBRACK }

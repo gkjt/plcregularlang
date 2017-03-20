@@ -1,7 +1,7 @@
 
 
-link: lexer.cmo parser.cmo langlang.cmo main.cmo parser.cmi
-	ocamlc -o langlangi bin/langlang.cmo bin/parser.cmo bin/lexer.cmo bin/main.cmo
+link: lexer.cmo parser.cmo langlang.cmo main.cmo parser.cmi langset.cmo
+	ocamlc -o langlangi bin/langset.cmo bin/langlang.cmo bin/parser.cmo bin/lexer.cmo bin/main.cmo
 
 clean:
 	@rm -rf bin
@@ -9,11 +9,12 @@ clean:
 
 pre:
 	@mkdir -p bin
-	cp -f parser.mly bin/parser.mly
-	cp -f lexer.mll bin/lexer.mll
-	cp -f parser.mly bin/parser.mly
-	cp -f main.ml bin/main.ml
-	cp -f langlang.ml bin/langlang.ml
+	@cp -f langset.ml bin/langset.ml
+	@cp -f parser.mly bin/parser.mly
+	@cp -f lexer.mll bin/lexer.mll
+	@cp -f parser.mly bin/parser.mly
+	@cp -f main.ml bin/main.ml
+	@cp -f langlang.ml bin/langlang.ml
 
 lexer: pre parser
 	ocamllex bin/lexer.mll -o bin/lexer.ml
@@ -30,8 +31,11 @@ parser.cmi: parser langlang.cmo
 parser.cmo: parser
 	ocamlc -c -I bin -o bin/parser.cmo bin/parser.ml
 
-langlang.cmo: pre
+langlang.cmo: pre langset.cmo
 	ocamlc -c -I bin -o bin/langlang.cmo bin/langlang.ml
+
+langset.cmo: pre
+	ocamlc -c -I bin -o bin/langset.cmo bin/langset.ml
 
 main.cmo: pre
 	ocamlc -c -I bin -o bin/main.cmo bin/main.ml
