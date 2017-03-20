@@ -23,13 +23,10 @@ type langTerm =
     | Assign of string * langTerm
     | ReadLanguage
     | ReadInt
-<<<<<<< HEAD
 	| Prefix of string * langTerm
-=======
     | Union of langTerm * langTerm
     | Print of langTerm
     | PrintSome of langTerm * int
->>>>>>> origin/master
 ;;
 
 type stdinBuffer = StdinBuff of langTerm * stdinBuffer
@@ -77,11 +74,8 @@ let rec typeOf env exp =
             (addBinding env x tz, tz)
     | ReadLanguage -> (env, LangType)
     | ReadInt -> (env, IntType)
-<<<<<<< HEAD
-	| Prefix (x, z) -> (env, LangType)
-    | _ -> raise TypeError
-=======
-    | Union (lang1, lang2) ->
+	| Prefix (s, lang) -> (env, UnitType)
+    | Union (lang1, lang2) -> 
         (match typeOf env lang1 with
             | (e, LangType) ->
                 if (e, LangType) = typeOf env lang2
@@ -99,7 +93,6 @@ let rec typeOf env exp =
             | LangType -> (env, UnitType)
             | IntType  | StringType | StatementType | UnitType -> raise (TypeError "Can only print with 2 params on Langs"))
     | _ -> raise (TypeError "Unimplemented type")
->>>>>>> origin/master
 ;;
 
 let rec typeCheckProgram statement =
@@ -111,7 +104,6 @@ let rec typeCheckProgram statement =
 ;;
 
 
-<<<<<<< HEAD
 let rec isVal v =
     match v with
         | Int x -> true
@@ -121,7 +113,7 @@ let rec isVal v =
         | ReadInt -> true
 		| Prefix (x, z) -> true
         | _ -> false
-=======
+		
 let rec print_some_language lang count =
     let rec aux x count =
     if(count > 0) then (match x with
@@ -147,7 +139,6 @@ let rec print_language v =
                     | Language [] -> print_string "{}"
                     | Language x -> print_string "{"; aux x
                     | _ -> raise (TypeError "Not a language")
->>>>>>> origin/master
 ;;
 
 let print_val v =
@@ -179,13 +170,8 @@ let rec eval env exp stdinBuff =
         | _ -> raise (BadBufferError "Unable to read lang due to bad buffer"))
     | ReadInt -> (match stdinBuff with
         | StdinInt x -> (env, Int x, EmptyBuffer)
-<<<<<<< HEAD
-        | _ -> raise (BadBufferError "Unable to read int due to bad buffer")
-	| Prefix (name, thing) ->
-        let (env', exp', stdinBuff') = (eval env thing stdinBuff) in
-            (env', Prefix (name, exp'), stdinBuff')
-=======
         | _ -> raise (BadBufferError "Unable to read int due to bad buffer"))
+	| Prefix (String x, Language y) -> (env, Language (prefix x y), stdinBuff)
     | Union (Language x, Language y) -> (env, Language (set_union x y), stdinBuff)
     | Union (Language x, y) ->
         let (env', y', stdinBuff') = eval env y stdinBuff in
@@ -202,7 +188,6 @@ let rec eval env exp stdinBuff =
         raise Terminated
     | PrintSome (x, count) -> let (env', x', buff') = eval env x stdinBuff
         in (env', PrintSome(x', count), buff')
->>>>>>> origin/master
     ;;
 
 let rec stmntEvalLoop env exp stdinBuff =
@@ -220,7 +205,6 @@ let rec stmntEvalLoop env exp stdinBuff =
 let rec evalProg exp stdinBuff =
     let (env,result,_) = stmntEvalLoop (Env []) exp stdinBuff in
         (env, result);;
-<<<<<<< HEAD
 
 let rec print_language v =
     let rec aux x =
@@ -253,5 +237,3 @@ let rec prefix s v =
                     | Language [] -> Language []
                     | Language x -> Language [aux x]
 ;;
-=======
->>>>>>> origin/master
