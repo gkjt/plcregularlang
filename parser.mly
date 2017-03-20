@@ -42,7 +42,7 @@ parse_main:
 expr:
     | OBRACK expr CBRACK        { $2 }
     | INTEGER                   { Int $1 }
-    | STRING        { String $1 }
+    | STRING                    { String $1 }
     | VAR                       { Var $1 }
     | VAR ASSIGNMENT expr    	{ Assign($1, $3) }
     | READLANG                  { ReadLanguage }
