@@ -23,8 +23,7 @@ let rec set_concatenate v1 v2 =
     in match v1 with
     | [] -> v2
     | [x] -> concatenate x v2
-    | x :: y -> (concatenate x v2) @ (set_concatenate y v2)
-    ;;
+    | x :: y -> (concatenate x v2) @ (set_concatenate y v2);;
 
 let rec set_intersection set1 set2 =
         let rec aux2 el set2 =
@@ -41,14 +40,9 @@ let rec set_intersection set1 set2 =
             | false -> set_intersection y set2
             | true -> x :: set_intersection y set2;;
 			
-let rec set_star v1 v2 count =
-    let rec star str set =
-        match set with
-        | [] -> []
-        | [x] -> [str^x]
-        | x :: y -> (str^x) :: star str y
-    in match v1 with
-    | [] -> v2
-    | [x] -> star x v2
-    | x :: y -> (star x v2) @ (set_star y v2 count)
-    ;;
+let rec set_star set count =
+	match set with
+    | [] -> []
+    | [x] -> []
+    | x :: y -> []
+;;

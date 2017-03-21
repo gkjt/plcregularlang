@@ -27,7 +27,7 @@ type langTerm =
 	| Conc of langTerm * langTerm
     | Union of langTerm * langTerm
     | Intersection of langTerm * langTerm
-	| Star of langTerm * langTerm * langTerm
+	| Star of langTerm * langTerm
     | Print of langTerm
     | PrintSome of langTerm * langTerm
 ;;
@@ -97,18 +97,13 @@ let rec typeOf env exp =
                 then (env, LangType)
                 else raise (TypeError "Intersection must be two Languages")
             | _ -> raise (TypeError "Intersection must be two Languages"))
-	| Star (lang1, lang2, count) -> let (env', typeOfThing) = typeOf env count in
+	| Star (lang1, count) -> let (env', typeOfThing) = typeOf env count in
         (match typeOfThing with
 			| IntType -> let (env', typeOfLang1) = typeOf env lang1 in
 				(match typeOf env lang1 with
-					| (e, LangType) | (e, StringType) ->
-						let (_, typeOfLang2) = typeOf env lang2 in
-							match typeOfLang2 with
-							| LangType | StringType -> 
-								(env, LangType)
-							| _ -> raise (TypeError "Star must be between Languages, Strings, or both, and an Int")
-					| _ -> raise (TypeError "Star must be two Languages, Strings, or both, and an Int"))
-			| LangType  | StringType | StatementType | UnitType -> raise (TypeError "Star must be two Languages, Strings, or both, and an Int")
+					| (e, LangType) | (e, StringType) -> (env, LangType)
+					| _ -> raise (TypeError "Star must be a Language or String and an Int"))
+			| LangType  | StringType | StatementType | UnitType -> raise (TypeError "Star must be a Language or String and an Int")
 			| _ -> raise (TypeError "Unimplemented type"))
     | Print x when isVal x -> (env, UnitType)
     | Print x -> let (env', typeOfThing) = typeOf env x in
@@ -224,18 +219,12 @@ let rec eval env exp stdinBuff =
     | Intersection(x, y) ->
         let (env', x', stdinBuff') = eval env x stdinBuff in
             (env', Intersection(x', y), stdinBuff')
-	| Star (a, b, c) -> (match (a, b, c) with
-        | (Language x, Language y, Int c) ->
-            (env, Language (set_star x y c), stdinBuff)
-        | (String x, String y, Int c) ->
-            (env, Language (set_star [x] [y] c), stdinBuff)
-        | (Language x, String y, Int c) ->
-            (env, Language (set_star x [y] c), stdinBuff)
-        | (String x, Language y, Int c) ->
-            (env, Language (set_star [x] y c), stdinBuff)
-        | (x, Language y, Int c) -> let (env', x', stdinBuff') = eval env x stdinBuff in (env', Star (x', Language y, Int c), stdinBuff')
-        | (x, String y, Int c) -> let (env', x', stdinBuff') = eval env x stdinBuff in (env', Star (x', String y, Int c), stdinBuff')
-        | (x, y, Int c) -> let (env', y', stdinBuff') = eval env y stdinBuff in (env', Star (x, y', Int c), stdinBuff'))
+	| Star (a, b) -> (match (a, b) with
+        | (Language x, Int c) ->
+            (env, Language (set_star x c), stdinBuff)
+        | (String x, Int c) ->
+            (env, Language (set_star [x] c), stdinBuff)
+        | (x, Int c) -> let (env', x', stdinBuff') = eval env x stdinBuff in (env', Star (x', Int c), stdinBuff'))
     | Print x when isVal x -> let () = print_val x in
         raise Terminated
     | Print x -> let (env', x', buff') = eval env x stdinBuff in
