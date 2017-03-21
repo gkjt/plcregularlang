@@ -101,14 +101,17 @@ let rec typeOf env exp =
         (match typeOfThing with
             | IntType | LangType | StringType -> (env, UnitType)
             | StatementType | UnitType -> raise (TypeError "Can only print Ints, Langs and Strings"))
-    | PrintSome (Language x, Integer count) -> (env, UnitType)
-    | PrintSome (x, Integer count) -> let (env', typeOfThing) = typeOf env x in
+    | PrintSome (Language x, Int count) -> (env, UnitType)
+    | PrintSome (x, Int count) -> let (env', typeOfThing) = typeOf env x in
         (match typeOfThing with
             | LangType -> (env, UnitType)
             | IntType  | StringType | StatementType | UnitType -> raise (TypeError "Can only print with 2 params on Langs"))
     | PrintSome (x, count) -> let (env', typeOfThing) = typeOf env count in
         (match typeOfThing with
-            | IntType -> typeOf env ()
+            | IntType -> let (env', typeOfThing2) = typeOf env x in
+                (match typeOfThing2 with
+                    | LangType -> (env, UnitType)
+                    | IntType  | StringType | StatementType | UnitType -> raise (TypeError "Can only print with 2 params on Langs"))
             | LangType  | StringType | StatementType | UnitType -> raise (TypeError "Can only print with 2 params on Langs"))
     | _ -> raise (TypeError "Unimplemented type")
 ;;
@@ -211,11 +214,13 @@ let rec eval env exp stdinBuff =
         raise Terminated
     | Print x -> let (env', x', buff') = eval env x stdinBuff in
         (env', Print x', buff')
-    | PrintSome ((Language x), count) ->
+    | PrintSome ((Language x), (Int count)) ->
         let () = print_some_language (Language x) count in
         raise Terminated
-    | PrintSome (x, count) -> let (env', x', buff') = eval env x stdinBuff
-        in (env', PrintSome(x', count), buff')
+    | PrintSome (x, Int count) -> let (env', x', buff') = eval env x stdinBuff
+        in (env', PrintSome(x', Int count), buff')
+    | PrintSome (x, count) -> let (env', count', buff') = eval env count stdinBuff
+        in (env', PrintSome(x, count'), buff')
 
 and stmntEvalLoop env exp stdinBuff =
     try
