@@ -1,0 +1,6 @@
+a = readlang;
+b = readint;
+c = READ_LANG_FROM("a", "b", "c")
+d = c ^ 2;
+e = a + d
+print e b;
