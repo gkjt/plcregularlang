@@ -224,7 +224,8 @@ let rec eval env exp stdinBuff =
             (env, Language (set_star x c), stdinBuff)
         | (String x, Int c) ->
             (env, Language (set_star [x] c), stdinBuff)
-        | (x, Int c) -> let (env', x', stdinBuff') = eval env x stdinBuff in (env', Star (x', Int c), stdinBuff'))
+        | (x, Int c) -> let (env', x', stdinBuff') = eval env x stdinBuff in (env', Star (x', Int c), stdinBuff')
+		| (x, c) -> let (env', c', stdinBuff') = eval env c stdinBuff in (env', Star (x, c'), stdinBuff'))
     | Print x when isVal x -> let () = print_val x in
         raise Terminated
     | Print x -> let (env', x', buff') = eval env x stdinBuff in

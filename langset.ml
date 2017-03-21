@@ -41,8 +41,11 @@ let rec set_intersection set1 set2 =
             | true -> x :: set_intersection y set2;;
 			
 let rec set_star set count =
-	match set with
-    | [] -> []
-    | [x] -> []
-    | x :: y -> []
+	let rec expon z =
+		match z with
+			| [] -> []
+			| [x] -> [x; x^(String.sub x 0 1)]
+			| x :: y -> x :: expon y
+	in
+	if (count > 0) then (set_star (expon set) (count-1))
 ;;
