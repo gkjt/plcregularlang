@@ -33,3 +33,7 @@ and prog = parse
     | '='                       { ASSIGNMENT }
     | '('                       { OBRACK }
     | ')'                       { CBRACK }
+    | ','                       { SEPARATOR }
+    | ':'                       { EMPTYWORD }
+    | '{'                       { LPAR }
+    | '}'                       { RPAR }

@@ -1,4 +1,4 @@
-a = readlang;
+a = {"a","b","c"};
 b = readint;
 print a;
 print a^0;
