@@ -28,6 +28,7 @@ type langTerm =
     | Union of langTerm * langTerm
     | Intersection of langTerm * langTerm
 	| Star of langTerm * langTerm
+	| Power of langTerm * langTerm
     | Print of langTerm
     | PrintSome of langTerm * langTerm
 ;;
@@ -105,6 +106,14 @@ let rec typeOf env exp =
 					| _ -> raise (TypeError "Star must be a Language or String and an Int"))
 			| LangType  | StringType | StatementType | UnitType -> raise (TypeError "Star must be a Language or String and an Int")
 			| _ -> raise (TypeError "Unimplemented type"))
+	| Power (lang1, count) -> let (env', typeOfThing) = typeOf env count in
+        (match typeOfThing with
+			| IntType -> let (env', typeOfLang1) = typeOf env lang1 in
+				(match typeOf env lang1 with
+					| (e, LangType) | (e, StringType) -> (env, LangType)
+					| _ -> raise (TypeError "Power must be a Language or String and an Int"))
+			| LangType  | StringType | StatementType | UnitType -> raise (TypeError "Power must be a Language or String and an Int")
+			| _ -> raise (TypeError "Unimplemented type"))
     | Print x when isVal x -> (env, UnitType)
     | Print x -> let (env', typeOfThing) = typeOf env x in
         (match typeOfThing with
@@ -158,7 +167,7 @@ let rec print_language v =
             | _ ->  print_string "}"
         in
                 match v with
-                    | Language [] -> print_string "{}\n"
+                    | Language [] -> print_string "{}"
                     | Language x -> print_string "{"; aux x
                     | _ -> raise (TypeError "Not a language")
 ;;
@@ -229,6 +238,13 @@ let rec eval env exp stdinBuff =
             (env, Language (set_star [x] c), stdinBuff)
         | (x, Int c) -> let (env', x', stdinBuff') = eval env x stdinBuff in (env', Star (x', Int c), stdinBuff')
 		| (x, c) -> let (env', c', stdinBuff') = eval env c stdinBuff in (env', Star (x, c'), stdinBuff'))
+	| Power (a, b) -> (match (a, b) with
+        | (Language x, Int c) ->
+            (env, Language (set_power x c), stdinBuff)
+        | (String x, Int c) ->
+            (env, Language (set_power [x] c), stdinBuff)
+        | (x, Int c) -> let (env', x', stdinBuff') = eval env x stdinBuff in (env', Power (x', Int c), stdinBuff')
+		| (x, c) -> let (env', c', stdinBuff') = eval env c stdinBuff in (env', Power (x, c'), stdinBuff'))
     | Print x when isVal x -> let () = print_val x in
         raise Terminated
     | Print x -> let (env', x', buff') = eval env x stdinBuff in

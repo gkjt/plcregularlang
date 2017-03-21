@@ -21,7 +21,7 @@
 %token READLANG READINT
 %token CONC
 %token SETUNION SETINTERSECT
-%token STAR
+%token STAR POWER
 
 %right ASSIGNMENT
 
@@ -52,6 +52,7 @@ expr:
     | expr SETUNION expr        { Union ($1, $3)}
     | expr SETINTERSECT expr    { Intersection ($1, $3)}
 	| expr STAR expr			{ Star ($1, $3) }
+	| expr POWER expr			{ Power ($1, $3) }
     | PRINT expr expr        	{ PrintSome ($2, $3) }
     | PRINT expr                { Print ($2) }
 

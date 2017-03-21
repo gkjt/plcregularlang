@@ -1,8 +1,7 @@
 a = readlang;
 b = readint;
-c = "a" * 5;
-d = a + c;
 print a;
-print a b;
-print c;
-print d;
+print a^0;
+print a^1;
+print a^2;
+print a^3;
