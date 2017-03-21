@@ -1,5 +1,6 @@
 {
     open Parser
+    exception LexError of string;;
 }
 
 
@@ -33,3 +34,7 @@ and prog = parse
     | '='                       { ASSIGNMENT }
     | '('                       { OBRACK }
     | ')'                       { CBRACK }
+    | ','                       { SEPARATOR }
+    | ':'                       { EMPTYWORD }
+    | '{'                       { LPAR }
+    | '}'                       { RPAR }
