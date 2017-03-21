@@ -1,0 +1,5 @@
+a = readlang;
+b = readint;
+c = "a" * b;
+d = a + c;
+print d b;
