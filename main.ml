@@ -4,29 +4,38 @@ open Lexer
 open Arg
 open Printf
 open Langset
+
+exception ParseError
 ;;
 
 let channel =
     try (open_in Sys.argv.(1))
     with Invalid_argument x -> failwith "USAGE: ./langlangi PATH";;
 
-let parseProgram =
-    try let lexbuf = Lexing.from_channel channel in
-        parse_main prog lexbuf
-    with Parsing.Parse_error -> failwith "Parse Failure on Program"
+let parse_or_exn parseFunc rule lexbuf source =
+    try parseFunc rule lexbuf
+    with LexError buff ->
+        let pos = lexbuf.Lexing.lex_curr_p in
+        let line = pos.Lexing.pos_lnum in
+        let charnum = pos.Lexing.pos_cnum - pos.Lexing.pos_bol in
+        let token = Lexing.lexeme lexbuf in
+        let () = (Printf.printf "Syntax error on token \"%s\" (%d, %d) of %s" token line charnum source) in
+        exit 1
 
+let parsedProgram =
+    let lexbuf = Lexing.from_channel channel in
+        parse_or_exn parse_main prog lexbuf
+;;
 let stdinBuff =
     try let lexbuf = Lexing.from_channel stdin in
         parse_input language lexbuf
     with Parsing.Parse_error -> failwith "Parse Failure on Input"
         ;;
 
-let parsedProg = parseProgram in
-    let () = print_string "Parsing Completed\n" in
-        let _ = typeCheckProgram parsedProg in
-            let () = print_string "Type Checking Completed\n" in
-                try let (env, result) = evalProg parsedProg stdinBuff in
-                    let () = print_string "Exited" in
-                        flush stdout
-                        with ProgEnd -> print_string "Yay!"
+let _ = typeCheckProgram parsedProgram in
+    let () = print_string "Type Checking Completed\n" in
+        try let (env, result) = evalProg parsedProgram stdinBuff in
+            let () = print_string "Exited" in
+                flush stdout
+                with ProgEnd -> exit 0
 ;;
