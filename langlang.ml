@@ -167,7 +167,7 @@ let rec print_language v =
             | _ ->  print_string "}"
         in
                 match v with
-                    | Language [] -> print_string "{}\n"
+                    | Language [] -> print_string "{}"
                     | Language x -> print_string "{"; aux x
                     | _ -> raise (TypeError "Not a language")
 ;;

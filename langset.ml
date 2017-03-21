@@ -57,5 +57,6 @@ let rec set_power set count =
 		if (count > 0) then (
 		(aux x (set_concatenate x set') (count - 1))) else (set_concatenate x set')
 	in match count with
-	| x -> aux set set (count - 2)
+	| 1 -> set
+	| x -> if (count >= 2) then (aux set set (count - 2)) else []
 ;;
