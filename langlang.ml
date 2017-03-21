@@ -127,7 +127,7 @@ let rec typeCheckProgram statement =
 let rec print_some_language lang count =
     let rec aux x count =
     if(count > 0) then (match x with
-        | [x] -> print_string (x^"}")
+        | [x] -> print_string (x^"}\n")
         | x :: y -> if(count = 1) then print_string x
             else print_string (x^", "); aux y (count-1)
         | _ ->  print_string "}") else print_string "}\n"
@@ -141,12 +141,12 @@ let rec print_some_language lang count =
 let rec print_language v =
     let rec aux x =
         match x with
-            | [x] -> print_string (x^"}")
+            | [x] -> print_string (x^"}\n")
             | x :: y -> print_string (x^","); aux y
-            | _ ->  print_string "}"
+            | _ ->  print_string "}\n"
         in
                 match v with
-                    | Language [] -> print_string "{}"
+                    | Language [] -> print_string "{}\n"
                     | Language x -> print_string "{"; aux x
                     | _ -> raise (TypeError "Not a language")
 ;;

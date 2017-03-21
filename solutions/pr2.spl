@@ -1,0 +1,8 @@
+a = readlang;
+b = readlang;
+c = readlang;
+d = readint;
+e = a U b;
+f = a U c;
+print e d;
+print f d;
