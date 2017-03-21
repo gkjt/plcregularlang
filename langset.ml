@@ -41,14 +41,21 @@ let rec set_intersection set1 set2 =
             | true -> x :: set_intersection y set2;;
 
 let rec set_star set count =
-	let rec expon z count=
+	let rec aux z count=
 		if (count >= 0) then (match z with
 			| [] -> []
-			| [x] -> let x' = (x^(String.sub x 0 1)) in x' :: expon [x'] (count-1)
-			| x :: y -> expon [x] (count-1)) else []
+			| [x] -> let x' = (x^(String.sub x 0 1)) in x' :: aux [x'] (count-1)
+			| x :: y -> aux [x] (count-1)) else []
 	in match set with
     | [] -> []
-	| [x] -> "" :: x :: expon set (count - 3)
+	| [x] -> "" :: x :: aux set (count - 3)
     | "" :: y -> set_star y count
-    | x :: y -> "" :: x :: expon set (count - 2);;
+    | x :: y -> "" :: x :: aux set (count - 2);;
+
+let rec set_power set count =
+	let rec aux x set' count =
+		if (count > 0) then (
+		(aux x (set_concatenate x set') (count - 1))) else (set_concatenate x set')
+	in match count with
+	| x -> aux set set (count - 2)
 ;;
