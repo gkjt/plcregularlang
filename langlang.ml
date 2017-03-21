@@ -137,6 +137,8 @@ let rec print_some_language lang count =
     let rec aux x count =
     if(count > 0) then (match x with
         | [x] -> print_string (x^"}\n")
+		| "" :: y -> if(count = 1) then print_string ":"
+            else print_string (":, "); aux y (count-1)
         | x :: y -> if(count = 1) then print_string x
             else print_string (x^", "); aux y (count-1)
         | _ ->  print_string "}") else print_string "}\n"
@@ -151,6 +153,7 @@ let rec print_language v =
     let rec aux x =
         match x with
             | [x] -> print_string (x^"}")
+			| "" :: y -> print_string (":, "); aux y
             | x :: y -> print_string (x^", "); aux y
             | _ ->  print_string "}"
         in
