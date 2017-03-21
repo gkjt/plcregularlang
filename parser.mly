@@ -30,6 +30,7 @@
 %type <Langlang.langTerm> parse_main
 %type <Langlang.stdinBuffer> parse_input
 %type <Langlang.word list> lang
+%type <Langlang.word list> inline_lang
 %type <Langlang.word> word
 
 %%
@@ -55,6 +56,11 @@ expr:
 	| expr POWER expr			{ Power ($1, $3) }
     | PRINT expr expr        	{ PrintSome ($2, $3) }
     | PRINT expr                { Print ($2) }
+    | LPAR inline_lang RPAR     { Language $2 }
+
+inline_lang:
+    | STRING SEPARATOR inline_lang   { set_add $3 $1 }
+    | STRING { [$1] }
 
 parse_input:
     | LPAR lang RPAR parse_input    { StdinBuff (Language $2, $4) }
