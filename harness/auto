@@ -1,17 +1,18 @@
 #!/bin/bash
 
-executable="./mysplinterpreter"
+executable="../mysplinterpreter"
+solutionsDir="../solutions"
 
 totalpassed=0
 for i in 1 2 3 4 5
 do
-	echo 
+	echo
 	echo "*****************"
 	echo "*     pr $i     *"
-	echo "*****************"	
-	prog="pr$i.spl"
+	echo "*****************"
+	prog="$solutionsDir/pr$i.spl"
 	passed=0
-	echo 
+	echo
 	echo "  ******************************"
 	echo "  *          test $i           *"
 	echo "  ******************************"
@@ -24,23 +25,23 @@ do
 	echo "  ------"
 	cat $in | sed "s/^/  /"
 	echo
-		
-	timeout 10s $executable $prog <$in 2>/dev/null >$out 
+
+	timeout 10s $executable $prog <$in 2>/dev/null >$out
 
 	if [ "$?" = 124 ]; then
 		echo -e "  TEST FAILED -- TIMEOUT"
 	else
 		outofficial="./tests/"
 		outofficial+=$i
-		outofficial+="out" 
+		outofficial+="out"
 
 		diff -wB $out $outofficial > /dev/null
 		if [ "$?" = 0 ]; then
 			passed=$((passed+1))
-			echo -e "  TEST PASSED" 
+			echo -e "  TEST PASSED"
 		else
-			echo -e "  TEST FAILED" 
-			echo 
+			echo -e "  TEST FAILED"
+			echo
 			echo "  Your output:"
 			echo "  ------------"
 			cat $out | sed "s/^/  /"
@@ -51,7 +52,7 @@ do
 			echo
 			fi
 		fi
-	echo 
+	echo
 	echo "$passed tests passed for pr$i"
 	totalpassed=$((totalpassed+passed))
 done

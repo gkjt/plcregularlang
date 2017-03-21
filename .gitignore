@@ -1,2 +1,5 @@
 /bin/*
-langlangi
+/harness/out*
+/harness/results.txt
+/langlangi
+mysplinterpreter
