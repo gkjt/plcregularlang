@@ -32,9 +32,9 @@ let stdinBuff =
         ;;
 
 let _ = typeCheckProgram parsedProgram in
-    let () = print_string "Type Checking Completed\n" in
+    (* let () = print_string "Type Checking Completed\n" in *)
         try let (env, result) = evalProg parsedProgram stdinBuff in
-            let () = print_string "Exited" in
+            (* let () = print_string "Exited" in *)
                 flush stdout
                 with ProgEnd -> exit 0
 ;;

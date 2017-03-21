@@ -80,9 +80,9 @@ let rec typeOf env exp =
         (match typeOf env lang1 with
             | (e, LangType) | (e, StringType) ->
                 let (_, typeOfLang2) = typeOf env lang2 in
-                    match typeOfLang2 with
+                    (match typeOfLang2 with
                     | LangType | StringType -> (env, LangType)
-                    | _ -> raise (TypeError "Concatenate must be between Languages, Strings, or both")
+                    | _ -> raise (TypeError "Concatenate must be between Languages, Strings, or both"))
             | _ -> raise (TypeError "Concatenate must be two Languages, Strings, or both"))
     | Union (lang1, lang2) ->
         (match typeOf env lang1 with
