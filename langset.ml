@@ -1,3 +1,5 @@
+open List;;
+
 let rec set_add set el =
     match set with
     | [] -> [el]
@@ -12,12 +14,17 @@ let rec set_union set1 set2 =
     | [x] -> set_add set2 x
     | x::y -> set_union y (set_add set2 x);;
 
-let rec prefix s v =
-    let rec aux x = (
-        match x with
-            | [x] -> [(s^x)]
-            | x :: y -> (s^x) :: aux y
-            ) in aux v;;
+let rec set_concatenate v1 v2 =
+    let rec concatenate str set =
+        match set with
+        | [] -> []
+        | [x] -> [str^x]
+        | x :: y -> (str^x) :: concatenate str y
+    in match v1 with
+    | [] -> v2
+    | [x] -> concatenate x v2
+    | x :: y -> (concatenate x v2) @ (set_concatenate y v2)
+    ;;
 
 let rec set_intersection set1 set2 =
         let rec aux2 el set2 =

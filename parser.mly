@@ -19,7 +19,7 @@
 %token ENDSTMNT
 %token <string> VAR
 %token READLANG READINT
-%token PREFIX
+%token CONC
 %token SETUNION SETINTERSECT
 
 %right ASSIGNMENT
@@ -42,15 +42,15 @@ parse_main:
 expr:
     | OBRACK expr CBRACK        { $2 }
     | INTEGER                   { Int $1 }
-    | STRING                    { String $1 }
+    | STRING        			{ String $1 }
     | VAR                       { Var $1 }
     | VAR ASSIGNMENT expr    	{ Assign($1, $3) }
     | READLANG                  { ReadLanguage }
     | READINT                  	{ ReadInt }
-	| PREFIX expr expr			{ Prefix( $2, $3) }
+	| expr CONC expr			{ Conc($1, $3) }
     | expr SETUNION expr        { Union ($1, $3)}
     | expr SETINTERSECT expr    { Intersection ($1, $3)}
-    | PRINT expr INTEGER        { PrintSome ($2, $3) }
+    | PRINT expr expr        { PrintSome ($2, $3) }
     | PRINT expr                { Print ($2) }
 
 parse_input:

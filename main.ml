@@ -25,6 +25,8 @@ let parsedProg = parseProgram in
     let () = print_string "Parsing Completed\n" in
         let _ = typeCheckProgram parsedProg in
             let () = print_string "Type Checking Completed\n" in
-                let (env, result) = evalProg parsedProg stdinBuff in
+                try let (env, result) = evalProg parsedProg stdinBuff in
                     let () = print_string "Exited" in
-                        flush stdout;;
+                        flush stdout
+                        with ProgEnd -> print_string "Yay!"
+;;
