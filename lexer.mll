@@ -23,6 +23,7 @@ and prog = parse
 	| "+"					    { CONC }
     | "U"                       { SETUNION }
     | "I"                       { SETINTERSECT }
+	| "*"						{ STAR }
     | "print"                   { PRINT }
     | '"' (['a'-'z']+ as lxm) '"' { STRING (lxm) }
     | ['a'-'z']+ as lxm         { VAR (lxm) }

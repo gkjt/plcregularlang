@@ -2,6 +2,5 @@ l = readlang;
 o = readlang;
 print l;
 print l U o;
-m = l + "b" + l;
-print m 5;
-n = 24;
+m = l * "x" 2;
+print m 4;
