@@ -13,7 +13,6 @@ rule language = parse
     | ':'                       { EMPTYWORD }
     | '{'                       { LPAR }
     | '}'                       { RPAR }
-    | _ { raise (LexError (Lexing.lexeme lexbuf)) }
 
 and prog = parse
     | [' ' '\t']                { prog lexbuf } (* skip whitespace and newlines *)
@@ -39,4 +38,3 @@ and prog = parse
     | ':'                       { EMPTYWORD }
     | '{'                       { LPAR }
     | '}'                       { RPAR }
-    | _ { raise (LexError (Lexing.lexeme lexbuf)) }

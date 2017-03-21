@@ -14,7 +14,7 @@ let channel =
 
 let parse_or_exn parseFunc rule lexbuf source =
     try parseFunc rule lexbuf
-    with LexError buff ->
+    with exn ->
         let pos = lexbuf.Lexing.lex_curr_p in
         let line = pos.Lexing.pos_lnum in
         let charnum = pos.Lexing.pos_cnum - pos.Lexing.pos_bol in
@@ -24,12 +24,11 @@ let parse_or_exn parseFunc rule lexbuf source =
 
 let parsedProgram =
     let lexbuf = Lexing.from_channel channel in
-        parse_or_exn parse_main prog lexbuf
+        parse_or_exn parse_main prog lexbuf Sys.argv.(1)
 ;;
 let stdinBuff =
-    try let lexbuf = Lexing.from_channel stdin in
-        parse_input language lexbuf
-    with Parsing.Parse_error -> failwith "Parse Failure on Input"
+    let lexbuf = Lexing.from_channel stdin in
+        parse_or_exn parse_input language lexbuf "stdin"
         ;;
 
 let _ = typeCheckProgram parsedProgram in
