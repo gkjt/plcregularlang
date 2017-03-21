@@ -46,6 +46,5 @@ let rec set_star set count =
 			| [] -> []
 			| [x] -> [x; x^(String.sub x 0 1)]
 			| x :: y -> x :: expon y
-	in
-	if (count > 0) then (set_star (expon set) (count-1))
+	in expon (expon set)
 ;;
