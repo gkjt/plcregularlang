@@ -1,6 +1,8 @@
-l = readlang;
-o = readlang;
-print l;
-print o;
-m = l * 5;
-print m;
+a = readlang;
+b = readint;
+c = "a" * 5;
+d = a + c;
+print a;
+print a b;
+print c;
+print d;

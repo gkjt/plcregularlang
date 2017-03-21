@@ -42,12 +42,13 @@ let rec set_intersection set1 set2 =
 
 let rec set_star set count =
 	let rec expon z count=
-		if (count > 0) then (match z with
+		if (count >= 0) then (match z with
 			| [] -> []
 			| [x] -> let x' = (x^(String.sub x 0 1)) in x' :: expon [x'] (count-1)
 			| x :: y -> expon [x] (count-1)) else []
 	in match set with
     | [] -> []
-    | "" :: y -> "" :: set_star y (count - 1)
-    | x :: y -> expon set count;;
+	| [x] -> "" :: x :: expon set (count - 3)
+    | "" :: y -> set_star y count
+    | x :: y -> "" :: x :: expon set (count - 2);;
 ;;
