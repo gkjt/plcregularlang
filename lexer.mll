@@ -1,5 +1,6 @@
 {
     open Parser
+    exception LexError of string;;
 }
 
 
@@ -12,6 +13,7 @@ rule language = parse
     | ':'                       { EMPTYWORD }
     | '{'                       { LPAR }
     | '}'                       { RPAR }
+    | _ { raise (LexError (Lexing.lexeme lexbuf)) }
 
 and prog = parse
     | [' ' '\t']                { prog lexbuf } (* skip whitespace and newlines *)
@@ -32,3 +34,4 @@ and prog = parse
     | '='                       { ASSIGNMENT }
     | '('                       { OBRACK }
     | ')'                       { CBRACK }
+    | _ { raise (LexError (Lexing.lexeme lexbuf)) }
