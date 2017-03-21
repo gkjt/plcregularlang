@@ -108,8 +108,8 @@ let rec typeOf env exp =
             | IntType  | StringType | StatementType | UnitType -> raise (TypeError "Can only print with 2 params on Langs"))
     | PrintSome (x, count) -> let (env', typeOfThing) = typeOf env count in
         (match typeOfThing with
-            | LangType -> (env, UnitType)
-            | IntType  | StringType | StatementType | UnitType -> raise (TypeError "Can only print with 2 params on Langs"))
+            | IntType -> typeOf env ()
+            | LangType  | StringType | StatementType | UnitType -> raise (TypeError "Can only print with 2 params on Langs"))
     | _ -> raise (TypeError "Unimplemented type")
 ;;
 
