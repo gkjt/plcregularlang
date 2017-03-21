@@ -4,10 +4,11 @@ exception Stuck
 exception TypeError of string
 exception BadBufferError of string
 exception Terminated
-exception VarNotExist
+exception VarNotExist of string
 exception UnexpectedEnd
 exception IllegalArgument
 exception EmptyBufferError
+exception ProgEnd;;
 
 
 type langType = IntType | LangType | StringType | StatementType | UnitType;;
@@ -27,7 +28,7 @@ type langTerm =
     | Union of langTerm * langTerm
     | Intersection of langTerm * langTerm
     | Print of langTerm
-    | PrintSome of langTerm * int
+    | PrintSome of langTerm * langTerm
 ;;
 
 type stdinBuffer = StdinBuff of langTerm * stdinBuffer
@@ -44,7 +45,7 @@ let addBinding env name obj =
 
 let rec lookup env lookfor =
     match env with
-        | Env [] -> raise VarNotExist
+        | Env [] -> raise (VarNotExist lookfor)
         | Env ( (name, obj) :: t) -> match (name = lookfor) with
             | true -> obj
             | false -> lookup (Env t) lookfor
@@ -73,7 +74,14 @@ let rec typeOf env exp =
             (addBinding env x tz, tz)
     | ReadLanguage -> (env, LangType)
     | ReadInt -> (env, IntType)
-	| Conc (x, y) -> (env, LangType)
+	| Conc (lang1, lang2) ->
+        (match typeOf env lang1 with
+            | (e, LangType) | (e, StringType) ->
+                let (_, typeOfLang2) = typeOf env lang2 in
+                    match typeOfLang2 with
+                    | LangType | StringType -> (env, LangType)
+                    | _ -> raise (TypeError "Concatenate must be between Languages, Strings, or both")
+            | _ -> raise (TypeError "Concatenate must be two Languages, Strings, or both"))
     | Union (lang1, lang2) ->
         (match typeOf env lang1 with
             | (e, LangType) ->
@@ -93,8 +101,12 @@ let rec typeOf env exp =
         (match typeOfThing with
             | IntType | LangType | StringType -> (env, UnitType)
             | StatementType | UnitType -> raise (TypeError "Can only print Ints, Langs and Strings"))
-    | PrintSome (Language x, count) -> (env, UnitType)
-    | PrintSome (x, count) -> let (env', typeOfThing) = typeOf env x in
+    | PrintSome (Language x, Integer count) -> (env, UnitType)
+    | PrintSome (x, Integer count) -> let (env', typeOfThing) = typeOf env x in
+        (match typeOfThing with
+            | LangType -> (env, UnitType)
+            | IntType  | StringType | StatementType | UnitType -> raise (TypeError "Can only print with 2 params on Langs"))
+    | PrintSome (x, count) -> let (env', typeOfThing) = typeOf env count in
         (match typeOfThing with
             | LangType -> (env, UnitType)
             | IntType  | StringType | StatementType | UnitType -> raise (TypeError "Can only print with 2 params on Langs"))
@@ -148,7 +160,10 @@ let print_val v =
 
 let rec eval env exp stdinBuff =
     match exp with
-    | Statement (x, y) -> let (env', x', stdinBuff') = stmntEvalLoop env x stdinBuff in eval env' y stdinBuff'
+    | Statement (x, y) -> ( match y with
+        | Statement (a, b) -> let (env', x', stdinBuff') = stmntEvalLoop env x stdinBuff in stmntEvalLoop env' y stdinBuff'
+        | _ -> let (env', x', stdinBuff') = stmntEvalLoop env x stdinBuff in stmntEvalLoop env' y stdinBuff'; raise ProgEnd
+        )
     | Int x -> raise Terminated
     | String x -> raise Terminated
     | Language x -> raise Terminated
@@ -166,9 +181,18 @@ let rec eval env exp stdinBuff =
     | ReadInt -> (match stdinBuff with
         | StdinInt x -> (env, Int x, EmptyBuffer)
         | _ -> raise (BadBufferError "Unable to read int due to bad buffer"))
-	| Conc (Language x, Language y) -> (env, Language (conc x y), stdinBuff)
-	| Conc (x, Language y) -> let (env', x', stdinBuff') = eval env x stdinBuff in (env, Conc (x', Language y), stdinBuff)
-	| Conc (x, y) -> let (env', y', stdinBuff') = eval env y stdinBuff in (env, Conc (x, y'), stdinBuff)
+	| Conc (a, b) -> (match (a, b) with
+        | (Language x, Language y) ->
+            (env, Language (set_concatenate x y), stdinBuff)
+        | (String x, String y) ->
+            (env, Language (set_concatenate [x] [y]), stdinBuff)
+        | (Language x, String y) ->
+            (env, Language (set_concatenate x [y]), stdinBuff)
+        | (String x, Language y) ->
+            (env, Language (set_concatenate [x] y), stdinBuff)
+        | (x, Language y) -> let (env', x', stdinBuff') = eval env x stdinBuff in (env', Conc (x', Language y), stdinBuff')
+        | (x, String y) -> let (env', x', stdinBuff') = eval env x stdinBuff in (env', Conc (x', String y), stdinBuff')
+        | (x, y) -> let (env', y', stdinBuff') = eval env y stdinBuff in (env', Conc (x, y'), stdinBuff'))
     | Union (Language x, Language y) -> (env, Language (set_union x y), stdinBuff)
     | Union (Language x, y) ->
         let (env', y', stdinBuff') = eval env y stdinBuff in
@@ -199,12 +223,14 @@ and stmntEvalLoop env exp stdinBuff =
             stmntEvalLoop env' exp' stdinBuff'
     with Terminated ->  (env, exp, stdinBuff);;
 
-(* let rec progEvalLoop env expList =
+ let rec progEvalLoop env expList stdinBuff =
     match expList with
-        | [x] -> stmntEvalLoop env x
-        | x :: y -> let (env', exp, stdinBuff') = stmntEvalLoop env x; in progEvalLoop env' y
-    ;; *)
+        | Statement (x, y) -> let (env', exp, stdinBuff') = stmntEvalLoop env x stdinBuff in stmntEvalLoop env' y stdinBuff'
+        | Statement (x, Statement (y, z)) -> let (env', exp, stdinBuff') = stmntEvalLoop env x stdinBuff; in progEvalLoop env' y stdinBuff'
+        | x -> stmntEvalLoop env expList stdinBuff
+
+    ;;
 
 let rec evalProg exp stdinBuff =
-    let (env,result,_) = stmntEvalLoop (Env []) exp stdinBuff in
+    let (env,result,_) = progEvalLoop (Env []) exp stdinBuff in
         (env, result);;
