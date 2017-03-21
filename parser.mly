@@ -30,6 +30,7 @@
 %type <Langlang.langTerm> parse_main
 %type <Langlang.stdinBuffer> parse_input
 %type <Langlang.word list> lang
+%type <Langlang.word list> inline_lang
 %type <Langlang.word> word
 
 %%
@@ -58,7 +59,7 @@ expr:
     | LPAR inline_lang RPAR     { Language $2 }
 
 inline_lang:
-    | STRING SEPARATOR lang   { set_add $3 $1 }
+    | STRING SEPARATOR inline_lang   { set_add $3 $1 }
     | STRING { [$1] }
 
 parse_input:
