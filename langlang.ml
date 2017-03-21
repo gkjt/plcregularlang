@@ -27,6 +27,7 @@ type langTerm =
 	| Conc of langTerm * langTerm
     | Union of langTerm * langTerm
     | Intersection of langTerm * langTerm
+	| Star of langTerm * langTerm
     | Print of langTerm
     | PrintSome of langTerm * langTerm
 ;;
@@ -96,19 +97,30 @@ let rec typeOf env exp =
                 then (env, LangType)
                 else raise (TypeError "Intersection must be two Languages")
             | _ -> raise (TypeError "Intersection must be two Languages"))
+	| Star (lang1, count) -> let (env', typeOfThing) = typeOf env count in
+        (match typeOfThing with
+			| IntType -> let (env', typeOfLang1) = typeOf env lang1 in
+				(match typeOf env lang1 with
+					| (e, LangType) | (e, StringType) -> (env, LangType)
+					| _ -> raise (TypeError "Star must be a Language or String and an Int"))
+			| LangType  | StringType | StatementType | UnitType -> raise (TypeError "Star must be a Language or String and an Int")
+			| _ -> raise (TypeError "Unimplemented type"))
     | Print x when isVal x -> (env, UnitType)
     | Print x -> let (env', typeOfThing) = typeOf env x in
         (match typeOfThing with
             | IntType | LangType | StringType -> (env, UnitType)
             | StatementType | UnitType -> raise (TypeError "Can only print Ints, Langs and Strings"))
-    | PrintSome (Language x, Integer count) -> (env, UnitType)
-    | PrintSome (x, Integer count) -> let (env', typeOfThing) = typeOf env x in
+    | PrintSome (Language x, Int count) -> (env, UnitType)
+    | PrintSome (x, Int count) -> let (env', typeOfThing) = typeOf env x in
         (match typeOfThing with
             | LangType -> (env, UnitType)
             | IntType  | StringType | StatementType | UnitType -> raise (TypeError "Can only print with 2 params on Langs"))
     | PrintSome (x, count) -> let (env', typeOfThing) = typeOf env count in
         (match typeOfThing with
-            | IntType -> typeOf env ()
+            | IntType -> let (env', typeOfThing2) = typeOf env x in
+                (match typeOfThing2 with
+                    | LangType -> (env, UnitType)
+                    | IntType  | StringType | StatementType | UnitType -> raise (TypeError "Can only print with 2 params on Langs"))
             | LangType  | StringType | StatementType | UnitType -> raise (TypeError "Can only print with 2 params on Langs"))
     | _ -> raise (TypeError "Unimplemented type")
 ;;
@@ -124,7 +136,7 @@ let rec typeCheckProgram statement =
 let rec print_some_language lang count =
     let rec aux x count =
     if(count > 0) then (match x with
-        | [x] -> print_string (x^"}")
+        | [x] -> print_string (x^"}\n")
         | x :: y -> if(count = 1) then print_string x
             else print_string (x^", "); aux y (count-1)
         | _ ->  print_string "}") else print_string "}\n"
@@ -139,11 +151,11 @@ let rec print_language v =
     let rec aux x =
         match x with
             | [x] -> print_string (x^"}")
-            | x :: y -> print_string (x^","); aux y
+            | x :: y -> print_string (x^", "); aux y
             | _ ->  print_string "}"
         in
                 match v with
-                    | Language [] -> print_string "{}"
+                    | Language [] -> print_string "{}\n"
                     | Language x -> print_string "{"; aux x
                     | _ -> raise (TypeError "Not a language")
 ;;
@@ -207,15 +219,24 @@ let rec eval env exp stdinBuff =
     | Intersection(x, y) ->
         let (env', x', stdinBuff') = eval env x stdinBuff in
             (env', Intersection(x', y), stdinBuff')
+	| Star (a, b) -> (match (a, b) with
+        | (Language x, Int c) ->
+            (env, Language (set_star x c), stdinBuff)
+        | (String x, Int c) ->
+            (env, Language (set_star [x] c), stdinBuff)
+        | (x, Int c) -> let (env', x', stdinBuff') = eval env x stdinBuff in (env', Star (x', Int c), stdinBuff')
+		| (x, c) -> let (env', c', stdinBuff') = eval env c stdinBuff in (env', Star (x, c'), stdinBuff'))
     | Print x when isVal x -> let () = print_val x in
         raise Terminated
     | Print x -> let (env', x', buff') = eval env x stdinBuff in
         (env', Print x', buff')
-    | PrintSome ((Language x), count) ->
+    | PrintSome ((Language x), (Int count)) ->
         let () = print_some_language (Language x) count in
         raise Terminated
-    | PrintSome (x, count) -> let (env', x', buff') = eval env x stdinBuff
-        in (env', PrintSome(x', count), buff')
+    | PrintSome (x, Int count) -> let (env', x', buff') = eval env x stdinBuff
+        in (env', PrintSome(x', Int count), buff')
+    | PrintSome (x, count) -> let (env', count', buff') = eval env count stdinBuff
+        in (env', PrintSome(x, count'), buff')
 
 and stmntEvalLoop env exp stdinBuff =
     try

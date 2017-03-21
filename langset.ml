@@ -23,8 +23,7 @@ let rec set_concatenate v1 v2 =
     in match v1 with
     | [] -> v2
     | [x] -> concatenate x v2
-    | x :: y -> (concatenate x v2) @ (set_concatenate y v2)
-    ;;
+    | x :: y -> (concatenate x v2) @ (set_concatenate y v2);;
 
 let rec set_intersection set1 set2 =
         let rec aux2 el set2 =
@@ -40,3 +39,15 @@ let rec set_intersection set1 set2 =
             match res with
             | false -> set_intersection y set2
             | true -> x :: set_intersection y set2;;
+
+let rec set_star set count =
+	let rec expon z count=
+		if (count > 0) then (match z with
+			| [] -> []
+			| [x] -> let x' = (x^(String.sub x 0 1)) in x' :: expon [x'] (count-1)
+			| x :: y -> expon [x] (count-1)) else []
+	in match set with
+    | [] -> []
+    | "" :: y -> "" :: set_star y (count - 1)
+    | x :: y -> expon set count;;
+;;
