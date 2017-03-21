@@ -39,12 +39,15 @@ let rec set_intersection set1 set2 =
             match res with
             | false -> set_intersection y set2
             | true -> x :: set_intersection y set2;;
-			
+
 let rec set_star set count =
-	let rec expon z =
-		match z with
+	let rec expon z count=
+		if (count > 0) then (match z with
 			| [] -> []
-			| [x] -> [x; x^(String.sub x 0 1)]
-			| x :: y -> x :: expon y
-	in expon (expon set)
+			| [x] -> let x' = (x^(String.sub x 0 1)) in x' :: expon [x'] (count-1)
+			| x :: y -> expon [x] (count-1)) else []
+	in match set with
+    | [] -> []
+    | "" :: y -> "" :: set_star y (count - 1)
+    | x :: y -> expon set count;;
 ;;
