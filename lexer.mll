@@ -5,7 +5,8 @@
 
 
 rule language = parse
-    | ' ' | '\t' | '\n'         { language lexbuf } (* skip whitespace and newlines *)
+    | ' ' | '\t'                { language lexbuf } (* skip whitespace and newlines *)
+    | '\n'                      { Lexing.new_line lexbuf; prog lexbuf }
     | eof                       { EOF }
     | ['0'-'9']+ as lxm         { INTEGER (int_of_string lxm) }
     | ['a'-'z']+ as lxm         { WORD (lxm) }
