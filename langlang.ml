@@ -2,10 +2,9 @@ open Langset;;
 
 exception Stuck
 exception TypeError of string
-exception BadBufferError of string
+exception BadBufferError
 exception Terminated
 exception VarNotExist of string
-exception UnexpectedEnd
 exception IllegalArgument
 exception EmptyBufferError
 exception ProgEnd;;
@@ -201,10 +200,10 @@ let rec eval env exp stdinBuff =
         | StdinBuff (Language x, StdinInt y) -> (env, Language x, StdinInt y)
         | StdinBuff (Language x, StdinBuff (y,z)) -> (env, (Language x), StdinBuff (y,z))
         | StdinInt x -> raise EmptyBufferError
-        | _ -> raise (BadBufferError "Unable to read lang due to bad buffer"))
+        | _ -> raise BadBufferError)
     | ReadInt -> (match stdinBuff with
         | StdinInt x -> (env, Int x, EmptyBuffer)
-        | _ -> raise (BadBufferError "Unable to read int due to bad buffer"))
+        | _ -> raise BadBufferError)
 	| Conc (a, b) -> (match (a, b) with
         | (Language x, Language y) ->
             (env, Language (set_concatenate x y), stdinBuff)

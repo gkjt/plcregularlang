@@ -38,4 +38,7 @@ try let _ = typeCheckProgram parsedProgram in
                 flush stdout
                 with ProgEnd -> exit 0)
 with TypeError x -> Printf.eprintf "Type Error: %s" x
+    | VarNotExist x -> Printf.eprintf "Empty Variable: %s" x
+    | EmptyBufferError -> Printf.eprintf "No more languages on buffer"
+    | BadBufferError -> Printf.eprintf "Call to readint or readlang with wrong type next on buffer"
 ;;
