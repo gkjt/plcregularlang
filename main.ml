@@ -19,7 +19,7 @@ let parse_or_exn parseFunc rule lexbuf source =
         let line = pos.Lexing.pos_lnum in
         let charnum = pos.Lexing.pos_cnum - pos.Lexing.pos_bol in
         let token = Lexing.lexeme lexbuf in
-        let () = (Printf.printf "Syntax error on token \"%s\" (%d, %d) of %s" token line charnum source) in
+        let () = (Printf.eprintf "Syntax error on token \"%s\" (%d, %d) of %s" token line charnum source) in
         exit 1
 
 let parsedProgram =
@@ -31,10 +31,11 @@ let stdinBuff =
         parse_or_exn parse_input language lexbuf "stdin"
         ;;
 
-let _ = typeCheckProgram parsedProgram in
+try let _ = typeCheckProgram parsedProgram in
     (* let () = print_string "Type Checking Completed\n" in *)
-        try let (env, result) = evalProg parsedProgram stdinBuff in
+        (try let (env, result) = evalProg parsedProgram stdinBuff in
             (* let () = print_string "Exited" in *)
                 flush stdout
-                with ProgEnd -> exit 0
+                with ProgEnd -> exit 0)
+with TypeError x -> Printf.eprintf "Type Error: %s" x
 ;;
