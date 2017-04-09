@@ -1,0 +1,28 @@
+\documentclass{article}
+\title{LangLang Developer Manual}
+\author{George Tucker - 27535592 - gkjt1g15@soton.ac.uk}
+\begin{document}
+\maketitle
+\section{Introduction}
+\begin{normalsize}
+LangLang is a small, imperative, weakly typed language for handling basic manipulations of regular languages. It is very easy to learn, with only 3 primitive types and 9 command symbols. Input is read on stdin before the program is executed, where it can then be accessed like a buffer, more in section \ref{sec_input}
+\end{normalsize}
+
+\section{The Basics}
+\subsection{Hello World}
+\label{helloworld}
+\begin{normalsize}
+So we are very proud to say that LangLang is capable of outputting strings to Standard Output. Yes, a great feat, we know, we know! It works as you would expect, as shown in the following code snippet:
+
+print "hello";
+
+So lets break this down:
+
+The print command comes in two flavours, with one argument or with two. In this case we are using 1 argument, which will just print out all of the argument, whatever it is. It will take any of our primitive types, or you can pass it a variable name and it will print out the value of that variable. See the reference for the print command in section \ref{print}.
+\end{normalsize}
+
+
+
+\input{builtins}
+\end{document}
+
