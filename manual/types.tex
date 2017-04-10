@@ -2,6 +2,7 @@
 \begin{normalsize}
 In LangLang there are 3 primitive types: \textit{strings}, \textit{languages}, and \textit{integers}. This limits the scope of the language, but makes it very simple to work with, with very few concepts to understand before you can use the entire language.
 \end{normalsize}
+
 \subsubsection{Integers}
 \begin{normalsize}
 LangLang has one number type, the integer. It holds a decimal number in the range $ 0 ... 2^{62}-1 $.
@@ -9,6 +10,7 @@ LangLang has one number type, the integer. It holds a decimal number in the rang
 Example:
 a = 12345;
 \end{normalsize}
+
 \subsubsection{Strings}
 \begin{normalsize}
 Strings in LangLang are surrounded by double quotes and contain lower case English letters, and can only be defined inside the program.
@@ -20,4 +22,9 @@ a = "youjustlostthegame";
 \subsubsection{Languages}
 \begin{normalsize}
 Languages are possibly the most important data type in LangLang. These are representations of finite size regular languages of finite length strings. These can be defined either in the input or the program itself
+\end{normalsize}
+
+\subsubsection{Unit}
+\begin{normalsize}
+There is one final "type", which is not used by users but is return type of the print function. It is much like other languages' "void" or "null" types: It does not count as a value, and you can't assign it to variables.
 \end{normalsize}

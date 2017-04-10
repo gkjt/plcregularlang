@@ -1,0 +1,35 @@
+\section{The Basics}
+\subsection{Hello World}
+\label{helloworld}
+\begin{normalsize}
+So we are very proud to say that LangLang is capable of outputting strings to Standard Output. Yes, a great feat, we know, we know! It works as you would expect, as shown in the following code snippet:
+
+print "hello";
+
+So lets break this down:
+
+The most familiar part of this command is the simple string. In LangLang, strings are surrounded by double quotes, and contain lowercase English characters only (so no spaces at the moment).
+
+The print command comes in two flavours, with one argument or with two. In this case we are using 1 argument, which will just print out all of the argument, whatever it is. It will take any of our primitive types, or you can pass it a variable name and it will print out the value of that variable. See the reference for the print command in section \ref{print}.
+
+Finally, you will notice the semicolon on the end of the line, which is rather important in LangLang. Every statement must be terminated by a semicolon, and not using one will cause a Syntax error on the beginning of the next statement (\textit{which may be an empty token in some cases!}).
+\end{normalsize}
+
+\subsection{Language Manipulation}
+\begin{normalsize}
+This is LangLang's \textit{raison d'etre}, regular language manipulation. LangLang provides several domain specific functions for working with regular languages, detailed in section \ref{builtins}. For this section I will use the following code:
+\begin{verbatim}
+a = {"h", "e", "l", "l", "o"};
+b = {"w", "o", "r", "l", "d"};
+print ((a+b) U a) 5;
+\end{verbatim}
+Outputs: ${ed, el, eo, er, ew}$
+
+This snippet demonstrates variable assignment, instantiating languages within a program. Assignment takes a variable name and binds a value to it, in this case a language, but could be a string, integer, or the output of a call to a built in function. We then use the concatenate operator on a and b, then take the union of the result of that function with a, and print the result, limiting the output to the first 5 elements. More about each function can be seen in section \ref{builtins}, but here you can see how easy it is to store data, perform operations, and output. Here we use the brackets to define evaluation order, as union binds more strongly than concatenation.
+\end{normalsize}
+
+\subsection{Using Input}
+\label{input}
+\begin{normalsize}
+LangLang reads input from STDIN before running the programme, and must get some input (what use is the program if it isn't using some input, right?). Input is separated by newlines and each line can either be an integer or a language. Languages are surrounded by curly braces and contain groups of lowercase English letters separated by a comma, with spaces around these commas ignored. These are read into a single buffer, where they can be read with $readint$ and $readlang$. These return the next item in the buffer, so you must be aware of the order in which you call these and the number of calls you make to these functions.
+\end{normalsize}

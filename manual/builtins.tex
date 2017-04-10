@@ -1,13 +1,13 @@
-\subsection{Builtin Functions}
+\section{Builtin Functions}
 \label{builtins}
 \begin{normalsize}
 LangLang provides a number of built in functions, detailed below. Many of these functions can be nested without brackets, although we recommend using brackets to keep the meaning of the program clear.
 \end{normalsize}
 
-\subsubsection{print}
+\subsection{Print}
 \label{print}
 \begin{verbatim}
-print OBJECT (optional LIMIT);
+print OBJECT (optional LIMIT) -> unit
 \end{verbatim}
 \begin{normalsize}
 Prints a representation of OBJECT to STDOUT. If OBJECT is a language, LIMIT can be used to print only a number of elements from the language. This does not affect the underlying data. All print calls end with a newline.
@@ -15,49 +15,49 @@ Prints a representation of OBJECT to STDOUT. If OBJECT is a language, LIMIT can 
 See section \ref{helloworld} for an example of using print.
 \end{normalsize}
 
-\subsubsection{Union}
+\subsection{Union}
 \begin{verbatim}
-LANG U LANG
+LANG U LANG -> language
 \end{verbatim}
 \begin{normalsize}
 Return the union of two languages
 \end{normalsize}
 
-\subsubsection{Intersection}
+\subsection{Intersection}
 \begin{verbatim}
-LANG I LANG
+LANG I LANG -> language
 \end{verbatim}
 \begin{normalsize}
 Returns the intersection of two languages. Intersection is left and right associative, so calls can be chained into one line with no issue.
 \end{normalsize}
 
-\subsubsection{Concatenation}
+\subsection{Concatenation}
 \begin{verbatim}
-LANG I LANG
+FIRST + SECOND -> language
+\end{verbatim}
+\begin{normalsize}
+Concatenates every item of the language FIRST with every item of SECOND. Either parameter may be a string, which is treated as a single word set. This operation is not commutative, but is associative and may be safely chained.
+\end{normalsize}
+
+\subsection{Addition}
+\begin{verbatim}
+LANG + LANG  -> int
 \end{verbatim}
 \begin{normalsize}
 
 \end{normalsize}
 
-\subsubsection{Addition}
+\subsection{Powerset}
 \begin{verbatim}
-LANG I LANG
+LANG ^ LIMIT -> language
 \end{verbatim}
 \begin{normalsize}
 
 \end{normalsize}
 
-\subsubsection{Powerset}
+\subsection{Kleene's Star}
 \begin{verbatim}
-LANG ^ LIMIT
-\end{verbatim}
-\begin{normalsize}
-
-\end{normalsize}
-
-\subsubsection{Kleene's Star}
-\begin{verbatim}
-ALPHABET * LENGTH
+ALPHABET * LENGTH -> language
 \end{verbatim}
 \begin{normalsize}
 Returns the set of elements of length LENGTH from the language over the set of symbols ALPHABET, which is also a language. There are no constraints on what may be in ALPHABET, but be aware that each element of the alphabet is counted as length 1, so:
@@ -67,35 +67,31 @@ print {"abc"} * 1;
 outputs $ abc $
 \end{normalsize}
 
-\subsubsection{Read Integer}
+\subsection{Read Integer}
 \begin{verbatim}
-readint
+readint -> integer
+\end{verbatim}
+\begin{normalsize}
+Gets the next item from the input buffer if it is an integer, else will throw an error.
+\end{normalsize}
+
+\subsection{Read Language}
+\begin{verbatim}
+readlang -> language
+\end{verbatim}
+\begin{normalsize}
+Gets the next item from the input buffer if it is a language, else will throw an error.
+\end{normalsize}
+
+
+
+
+\iffalse
+\subsection{Addition}
+\begin{verbatim}
+LANG I LANG -> 
 \end{verbatim}
 \begin{normalsize}
 
 \end{normalsize}
-
-\subsubsection{Read Language}
-\begin{verbatim}
-readlang
-\end{verbatim}
-\begin{normalsize}
-
-\end{normalsize}
-
-\subsubsection{Print}
-print OBJECT (optional LIMIT)
-\begin{verbatim}
-LANG I LANG
-\end{verbatim}
-\begin{normalsize}
-
-\end{normalsize}
-
-\subsubsection{Addition}
-\begin{verbatim}
-LANG I LANG
-\end{verbatim}
-\begin{normalsize}
-
-\end{normalsize}
+\fi
