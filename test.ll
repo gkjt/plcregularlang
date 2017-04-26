@@ -1,5 +1,3 @@
-a = {"a","b","c"};
-readlang;
-b = readint;
-print a;
-print a^b;
+a = {"h", "e", "l", "l", "o"};
+b = {"w", "o", "r", "l", "d"};
+print ((a+b) U a) 5;

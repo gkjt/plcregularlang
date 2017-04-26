@@ -3,3 +3,6 @@
 /harness/results.txt
 /langlangi
 mysplinterpreter
+group.txt
+*.cmi
+*.cmo
