@@ -1,0 +1,5 @@
+l = readlang;
+m= readlang;
+n= readint;
+
+print ("a"+l)U(m+{"b"}*n) n;

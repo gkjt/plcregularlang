@@ -2,9 +2,23 @@
 \begin{normalsize}
 LangLang has a very simple error system, syntax errors and type errors.
 
-Syntax errors are for when you type something in that is not a valid LangLang token, and can occur in both the input and the program. The error message for a syntax error contains the line and column number for where the token that cause the error was, and the token that caused the error. Note that the token may be a newline or absence of a different token (ie. End of file before a semicolon on a previous statement), however it will still tell you where it is so you can easily see the issue.
+Syntax errors are for when you type something in that is not a valid LangLang token, and can occur in both the input and the program. The error message for a syntax error contains the line and column number for where the token that cause the error was, and the token that caused the error. Note that the token may be a newline or absence of a different token (ie. End of file before a semicolon on a previous statement), however it will still tell you where it is so you can easily see the issue. Syntax errors occur during lexing and parsing of the program, so they are always the first to be thrown. If the program and the input both pass the lexer and parser without issue the program moves on to the type checker.
 
-Type errors occur when the expression is made up of valid tokens, but one or more of the tokens are the wrong type for the function. In this case a message describing how the offending function should be used is provided, so you can find the problem and fix your program.
+\begin{center}
+\begin{minipage}{5cm}
+\begin{verbatim}
+print +;
+\end{verbatim}
+\end{minipage}
+\end{center}
+\begin{normalsize}
+Outputs:
+\begin{verbatim}
+Syntax error on token "+" (1, 7) of program.spl
+\end{verbatim}
+\end{normalsize}
+
+Type errors occur when the expression is made up of valid tokens, but one or more of the tokens are the wrong type for the function. In this case a message describing how the offending function should be used is provided, so you can find the problem and fix your program. Type checking occurs between parsing of the program and executing the program, and is only run on the program, so errors due to calling read functions in the wrong order are not caught.
 \end{normalsize}
 
 \begin{center}
@@ -12,8 +26,11 @@ Type errors occur when the expression is made up of valid tokens, but one or mor
 \begin{verbatim}
 print 1 + "b";
 \end{verbatim}
-\begin{normalsize}
-Outputs: $ Type Error: Concatenate must be between Languages, Strings, or both $
-\end{normalsize}
 \end{minipage}
 \end{center}
+\begin{normalsize}
+Outputs:
+\begin{verbatim}
+Type Error: Concatenate must be between Languages, Strings, or both 
+\end{verbatim}
+\end{normalsize}
