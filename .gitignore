@@ -6,3 +6,10 @@ mysplinterpreter
 group.txt
 *.cmi
 *.cmo
+scrap.spl
+manual/document.aux
+manual/document.dvi
+manual/document.out
+manual/document.synctex.gz
+*.log
+*.aux
