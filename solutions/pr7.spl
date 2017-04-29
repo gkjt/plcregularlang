@@ -1,0 +1,7 @@
+a = readlang;
+b = readlang;
+c = readlang;
+n = readint;
+
+print (aIb)Uc n;
+print aI(bUc) n;
