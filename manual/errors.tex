@@ -1,0 +1,19 @@
+\subsection{Errors}
+\begin{normalsize}
+LangLang has a very simple error system, syntax errors and type errors.
+
+Syntax errors are for when you type something in that is not a valid LangLang token, and can occur in both the input and the program. The error message for a syntax error contains the line and column number for where the token that cause the error was, and the token that caused the error. Note that the token may be a newline or absence of a different token (ie. End of file before a semicolon on a previous statement), however it will still tell you where it is so you can easily see the issue.
+
+Type errors occur when the expression is made up of valid tokens, but one or more of the tokens are the wrong type for the function. In this case a message describing how the offending function should be used is provided, so you can find the problem and fix your program.
+\end{normalsize}
+
+\begin{center}
+\begin{minipage}{5cm}
+\begin{verbatim}
+print 1 + "b";
+\end{verbatim}
+\begin{normalsize}
+Outputs: $ Type Error: Concatenate must be between Languages, Strings, or both $
+\end{normalsize}
+\end{minipage}
+\end{center}
