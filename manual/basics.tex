@@ -18,11 +18,15 @@ Finally, you will notice the semicolon on the end of the line, which is rather i
 \subsection{Language Manipulation}
 \begin{normalsize}
 This is LangLang's \textit{raison d'etre}, regular language manipulation. LangLang provides several domain specific functions for working with regular languages, detailed in section \ref{builtins}. For this section I will use the following code:
+\begin{center}
+\begin{minipage}{8cm}
 \begin{verbatim}
 a = {"h", "e", "l", "l", "o"};
 b = {"w", "o", "r", "l", "d"};
 print ((a+b) U a) 5;
 \end{verbatim}
+\end{minipage}
+\end{center}
 Outputs: ${ed, el, eo, er, ew}$
 
 This snippet demonstrates variable assignment, instantiating languages within a program. Assignment takes a variable name and binds a value to it, in this case a language, but could be a string, integer, or the output of a call to a built in function. We then use the concatenate operator on a and b, then take the union of the result of that function with a, and print the result, limiting the output to the first 5 elements. More about each function can be seen in section \ref{builtins}, but here you can see how easy it is to store data, perform operations, and output. Here we use the brackets to define evaluation order, as union binds more strongly than concatenation.

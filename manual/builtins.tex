@@ -6,9 +6,13 @@ LangLang provides a number of built in functions, detailed below. Many of these 
 
 \subsection{Print}
 \label{print}
+\begin{center}
+\begin{minipage}{8cm}
 \begin{verbatim}
 print OBJECT (optional LIMIT) -> unit
 \end{verbatim}
+\end{minipage}
+\end{center}
 \begin{normalsize}
 Prints a representation of OBJECT to STDOUT. If OBJECT is a language, LIMIT can be used to print only a number of elements from the language. This does not affect the underlying data. All print calls end with a newline.
 
@@ -16,69 +20,105 @@ See section \ref{helloworld} for an example of using print.
 \end{normalsize}
 
 \subsection{Union}
+\begin{center}
+\begin{minipage}{5cm}
 \begin{verbatim}
 LANG U LANG -> language
 \end{verbatim}
+\end{minipage}
+\end{center}
 \begin{normalsize}
 Return the union of two languages
 \end{normalsize}
 
 \subsection{Intersection}
+\begin{center}
+\begin{minipage}{5cm}
 \begin{verbatim}
 LANG I LANG -> language
 \end{verbatim}
+\end{minipage}
+\end{center}
 \begin{normalsize}
 Returns the intersection of two languages. Intersection is left and right associative, so calls can be chained into one line with no issue.
 \end{normalsize}
 
 \subsection{Concatenation}
+\begin{center}
+\begin{minipage}{5cm}
 \begin{verbatim}
 FIRST + SECOND -> language
 \end{verbatim}
+\end{minipage}
+\end{center}
 \begin{normalsize}
 Concatenates every item of the language FIRST with every item of SECOND. Either parameter may be a string, which is treated as a single word set. This operation is not commutative, but is associative and may be safely chained.
 \end{normalsize}
 
 \subsection{Addition}
+\begin{center}
+\begin{minipage}{5cm}
 \begin{verbatim}
 LANG + LANG  -> int
 \end{verbatim}
+\end{minipage}
+\end{center}
 \begin{normalsize}
 
 \end{normalsize}
 
 \subsection{Powerset}
+\begin{center}
+\begin{minipage}{5cm}
 \begin{verbatim}
 LANG ^ LIMIT -> language
 \end{verbatim}
+\end{minipage}
+\end{center}
 \begin{normalsize}
 
 \end{normalsize}
 
 \subsection{Kleene's Star}
+\begin{center}
+\begin{minipage}{6cm}
 \begin{verbatim}
 ALPHABET * LENGTH -> language
 \end{verbatim}
+\end{minipage}
+\end{center}
 \begin{normalsize}
 Returns the set of elements of length LENGTH from the language over the set of symbols ALPHABET, which is also a language. There are no constraints on what may be in ALPHABET, but be aware that each element of the alphabet is counted as length 1, so:
+\begin{center}
+\begin{minipage}{5cm}
 \begin{verbatim}
 print {"abc"} * 1;
 \end{verbatim}
+\end{minipage}
+\end{center}
 outputs $ abc $
 \end{normalsize}
 
 \subsection{Read Integer}
+\begin{center}
+\begin{minipage}{5cm}
 \begin{verbatim}
 readint -> integer
 \end{verbatim}
+\end{minipage}
+\end{center}
 \begin{normalsize}
 Gets the next item from the input buffer if it is an integer, else will throw an error.
 \end{normalsize}
 
 \subsection{Read Language}
+\begin{center}
+\begin{minipage}{5cm}
 \begin{verbatim}
 readlang -> language
 \end{verbatim}
+\end{minipage}
+\end{center}
 \begin{normalsize}
 Gets the next item from the input buffer if it is a language, else will throw an error.
 \end{normalsize}
@@ -88,9 +128,13 @@ Gets the next item from the input buffer if it is a language, else will throw an
 
 \iffalse
 \subsection{Addition}
+\begin{center}
+\begin{minipage}{5cm}
 \begin{verbatim}
 LANG I LANG -> 
 \end{verbatim}
+\end{minipage}
+\end{center}
 \begin{normalsize}
 
 \end{normalsize}
