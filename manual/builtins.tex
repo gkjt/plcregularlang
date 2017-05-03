@@ -43,7 +43,7 @@ LANG I LANG -> language
 Returns the intersection of two languages. Intersection is left and right associative, so calls can be chained into one line with no issue.
 \end{normalsize}
 
-\subsection{Concatenation}
+\subsection{Concatenation }
 \begin{center}
 \begin{minipage}{5cm}
 \begin{verbatim}
@@ -53,19 +53,6 @@ FIRST + SECOND -> language
 \end{center}
 \begin{normalsize}
 Concatenates every item of the language FIRST with every item of SECOND. Either parameter may be a string, which is treated as a single word set. This operation is not commutative, but is associative and may be safely chained.
-\end{normalsize}
-
-\subsection{Addition}
-\begin{center}
-\begin{minipage}{5cm}
-\begin{verbatim}
-LANG + LANG  -> int
-\end{verbatim}
-\end{minipage}
-\end{center}
-\begin{normalsize}
-
-\end{normalsize}
 
 \subsection{Powerset}
 \begin{center}
@@ -76,7 +63,16 @@ LANG ^ LIMIT -> language
 \end{minipage}
 \end{center}
 \begin{normalsize}
-
+Get the first LIMIT elements of the powerset of LANG. In practice, this is just the powerset of the first element of LANG.
+\begin{center}
+\begin{minipage}{5cm}
+\begin{verbatim}
+print {"a", "b", "c"} ^ 2;
+\end{verbatim}
+\end{minipage}
+\end{center}
+Outputs: $ \{aa, ab, ac, ba, bb, bc, ca, cb, cc\} $
+\end{normalsize}
 \end{normalsize}
 
 \subsection{Kleene's Star}
@@ -88,15 +84,18 @@ ALPHABET * LENGTH -> language
 \end{minipage}
 \end{center}
 \begin{normalsize}
-Returns the set of elements of length LENGTH from the language over the set of symbols ALPHABET, which is also a language. There are no constraints on what may be in ALPHABET, but be aware that each element of the alphabet is counted as length 1, so:
+Returns the set of elements of length LENGTH from the language over the set of symbols ALPHABET, which is also a language.
+
 \begin{center}
 \begin{minipage}{5cm}
 \begin{verbatim}
-print {"abc"} * 1;
+print {"a", "b", "c"} * 5;
 \end{verbatim}
 \end{minipage}
 \end{center}
-outputs $ abc $
+Outputs: $ \{:, a, aa, aaa, aaaa\} $
+
+All elements of ALPHABET must be single characters, passing anything longer will cause it to only use the first character of each element in all but the first non empty element.
 \end{normalsize}
 
 \subsection{Read Integer}
