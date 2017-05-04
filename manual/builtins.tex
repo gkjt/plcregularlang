@@ -28,7 +28,7 @@ LANG U LANG -> language
 \end{minipage}
 \end{center}
 \begin{normalsize}
-Return the union of two languages
+Return the union of two languages.
 \end{normalsize}
 
 \subsection{Intersection}
@@ -43,7 +43,7 @@ LANG I LANG -> language
 Returns the intersection of two languages. Intersection is left and right associative, so calls can be chained into one line with no issue.
 \end{normalsize}
 
-\subsection{Concatenation }
+\subsection{Concatenation}
 \begin{center}
 \begin{minipage}{5cm}
 \begin{verbatim}
@@ -63,7 +63,7 @@ LANG ^ LIMIT -> language
 \end{minipage}
 \end{center}
 \begin{normalsize}
-Get the first LIMIT elements of the powerset of LANG. In practice, this is just the powerset of the first element of LANG.
+Returns the set consisting of all elements of the language LANG multiplied by each other a LIMIT number of times.
 \begin{center}
 \begin{minipage}{5cm}
 \begin{verbatim}
@@ -72,7 +72,6 @@ print {"a", "b", "c"} ^ 2;
 \end{minipage}
 \end{center}
 Outputs: $ \{aa, ab, ac, ba, bb, bc, ca, cb, cc\} $
-\end{normalsize}
 \end{normalsize}
 
 \subsection{Kleene's Star}
